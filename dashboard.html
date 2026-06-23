@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Fitness Academia</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">🏋️</div>
+      <h2>FITNESS <span>ACADEMIA</span></h2>
+    </div>
+
+    <nav class="menu">
+      <p>NAVEGAÇÃO</p>
+      <a class="active" href="dashboard.html">🏠 Dashboard</a>
+      <a href="alunos.html">👥 Alunos</a>
+      <a href="planos.html">📋 Planos</a>
+      <a href="pagamentos.html">💳 Pagamentos</a>
+      <a href="treinos.html">🏋️ Treinos</a>
+    </nav>
+
+    <div class="sidebar-user">
+      <strong>Administrador</strong>
+      <span>admin@academia.com</span>
+      <small>● Online</small>
+    </div>
+
+    <button id="btnSair" class="btn-logout">↪ Sair</button>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <button class="mobile-menu" id="btnMenu">☰</button>
+      <input type="text" placeholder="Buscar aluno, plano, treino..." />
+      <div class="admin-area">
+        <span>🔔</span>
+        <span>⚙️</span>
+        <strong>Administrador</strong>
+      </div>
+    </header>
+
+    <section class="welcome">
+      <div>
+        <h1>Bem-vindo de volta, Administrador! 💪</h1>
+        <p>Aqui está o resumo da sua academia hoje.</p>
+      </div>
+      <a href="alunos.html" class="btn-primary">+ Novo Aluno</a>
+    </section>
+
+    <section class="stats-grid">
+      <article class="stat-card purple">
+        <span>👥</span>
+        <div>
+          <p>Alunos Ativos</p>
+          <h2 id="totalAlunos">0</h2>
+          <small>Controle de alunos</small>
+        </div>
+      </article>
+
+      <article class="stat-card blue">
+        <span>📋</span>
+        <div>
+          <p>Planos Ativos</p>
+          <h2 id="totalPlanos">0</h2>
+          <small>Planos cadastrados</small>
+        </div>
+      </article>
+
+      <article class="stat-card green">
+        <span>💰</span>
+        <div>
+          <p>Receita do Mês</p>
+          <h2 id="receitaMes">R$ 0,00</h2>
+          <small>Pagamentos registrados</small>
+        </div>
+      </article>
+
+      <article class="stat-card orange">
+        <span>🏋️</span>
+        <div>
+          <p>Treinos Hoje</p>
+          <h2 id="totalTreinos">0</h2>
+          <small>Treinos cadastrados</small>
+        </div>
+      </article>
+    </section>
+
+    <section class="dashboard-grid">
+      <article class="panel banner">
+        <div>
+          <h2>Transforme vidas. Transforme você.</h2>
+          <p>Gerencie alunos, planos, pagamentos e treinos em um só lugar.</p>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>Ações rápidas</h2>
+        <div class="quick-actions">
+          <a href="alunos.html">👤 Novo Aluno</a>
+          <a href="planos.html">📋 Novo Plano</a>
+          <a href="pagamentos.html">💰 Novo Pagamento</a>
+          <a href="treinos.html">🏋️ Novo Treino</a>
+        </div>
+      </article>
+
+      <article class="panel">
+        <h2>Alunos recentes</h2>
+        <div id="alunosRecentes" class="recent-list"></div>
+      </article>
+
+      <article class="panel">
+        <h2>Arquitetura MVC</h2>
+        <div class="mvc-flow">
+          <span>View</span>
+          <b>→</b>
+          <span>Controller</span>
+          <b>→</b>
+          <span>Model</span>
+        </div>
+        <p class="muted">Sistema criado para demonstrar o padrão MVC com HTML, CSS e JavaScript.</p>
+      </article>
+    </section>
+  </main>
+
+  <div id="toast" class="toast"></div>
+  <script type="module" src="js/dashboard.js"></script>
+</body>
+</html>
