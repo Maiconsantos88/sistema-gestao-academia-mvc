@@ -37,3 +37,9 @@ O projeto foi organizado utilizando o padrão MVC:
 3. Use a extensão Live Server.
 4. Abra o arquivo index.html.
 5. Faça login com o usuário de teste.
+
+## Demonstração Online
+
+Sistema publicado para fins acadêmicos.
+
+Link de acesso:https://sistema-gestao-academia-mvc.netlify.app/
