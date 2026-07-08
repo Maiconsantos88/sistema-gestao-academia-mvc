@@ -1,5 +1,5 @@
 import { AlunoModel, PlanoModel } from "./model/AcademiaModel.js";
-import { mostrarToast, mascaraTelefone, emailValido, protegerPagina, ativarMenuMobile } from "./utils/helpers.js";
+import { ativarMenuMobile, emailValido, mascaraTelefone, mostrarToast, protegerPagina } from "./utils/helpers.js";
 
 protegerPagina();
 ativarMenuMobile();
@@ -25,11 +25,17 @@ const btnNaoExcluir = document.getElementById("btnNaoExcluir");
 
 let idParaExcluir = null;
 
-function carregarPlanos() {
-  plano.innerHTML = `<option value="">Selecione um plano</option>`;
-  planoModel.listar().forEach(item => {
-    plano.innerHTML += `<option value="${item.nome}">${item.nome}</option>`;
-  });
+async function carregarPlanos() {
+    const resposta = await fetch("http://localhost:3000/api/planos");
+    const planos = await resposta.json();
+
+    plano.innerHTML = '<option value="">Selecione um plano</option>';
+
+    planos.forEach(item => {
+        plano.innerHTML += `
+            <option value="${item.nome}">${item.nome}</option>
+        `;
+    });
 }
 
 function limparFormulario() {
@@ -38,28 +44,47 @@ function limparFormulario() {
 }
 
 function renderizarTabela(dados = model.listar()) {
-  tabela.innerHTML = "";
+    tabela.innerHTML = "";
 
-  if (dados.length === 0) {
-    tabela.innerHTML = `<tr><td colspan="6">Nenhum aluno cadastrado.</td></tr>`;
-    return;
-  }
+    if (dados.length === 0) {
+        tabela.innerHTML =
+            '<tr><td colspan="6">Nenhum aluno cadastrado.</td></tr>';
+        return;
+    }
 
-  dados.forEach(aluno => {
-    const linha = document.createElement("tr");
-    linha.innerHTML = `
-      <td>${aluno.nome}</td>
-      <td>${aluno.email}</td>
-      <td>${aluno.telefone}</td>
-      <td>${aluno.plano}</td>
-      <td><span class="badge ${aluno.status}">${aluno.status}</span></td>
-      <td>
-        <button class="action-btn edit" data-id="${aluno.id}">✏️</button>
-        <button class="action-btn delete" data-id="${aluno.id}">🗑️</button>
-      </td>
-    `;
-    tabela.appendChild(linha);
-  });
+    dados.forEach(aluno => {
+        const linha = document.createElement("tr");
+
+        linha.innerHTML = `
+            <td>${aluno.nome}</td>
+            <td>${aluno.email}</td>
+            <td>${aluno.telefone}</td>
+            <td>${aluno.plano}</td>
+            <td>${aluno.status}</td>
+            <td>
+             <button class="btn-edit" data-id="${aluno.id}">
+                    Editar
+                </button>
+
+                <button class="btn-delete" data-id="${aluno.id}">
+                    Excluir
+                </button>
+        `;
+
+        tabela.appendChild(linha);
+    });
+
+    document.querySelectorAll(".btn-edit").forEach(botao => {
+        botao.addEventListener("click", () => {
+            alert("Editar aluno ID: " + botao.dataset.id);
+        });
+    });
+
+    document.querySelectorAll(".btn-delete").forEach(botao => {
+        botao.addEventListener("click", () => {
+            alert("Excluir aluno ID: " + botao.dataset.id);
+        });
+    });
 }
 
 telefone.addEventListener("input", () => {
@@ -85,12 +110,44 @@ form.addEventListener("submit", (evento) => {
   };
 
   if (alunoId.value) {
-    model.atualizar(Number(alunoId.value), dados);
-    mostrarToast("Aluno atualizado com sucesso!");
-  } else {
-    model.cadastrar(dados);
-    mostrarToast("Aluno cadastrado com sucesso!");
-  }
+    fetch(`http://localhost:3000/api/alunos/${alunoId.value}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dados)
+    })
+    .then(response => response.json())
+    .then(() => {
+        mostrarToast("Aluno atualizado no banco com sucesso!");
+        limparFormulario();
+        location.reload();
+    })
+    .catch(error => {
+        console.error(error);
+        mostrarToast("Erro ao atualizar aluno.", "error");
+    });
+} else {
+
+    fetch('http://localhost:3000/api/alunos', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dados)
+    })
+    .then(response => response.json())
+    .then(() => {
+        mostrarToast("Aluno cadastrado no banco com sucesso!");
+        limparFormulario();
+        location.reload();
+    })
+    .catch(error => {
+        console.error(error);
+        mostrarToast("Erro ao cadastrar aluno.", "error");
+    });
+
+}
 
   limparFormulario();
   renderizarTabela();
@@ -137,3 +194,80 @@ btnSimExcluir.addEventListener("click", () => {
 
 carregarPlanos();
 renderizarTabela();
+
+fetch('http://localhost:3000/api/alunos')
+    .then(response => response.json())
+    .then(dados => {
+        console.log(dados);
+
+        tabela.innerHTML = '';
+
+        dados.forEach(aluno => {
+            tabela.innerHTML += `
+                <tr>
+                    <td>${aluno.nome}</td>
+                    <td>${aluno.email}</td>
+                    <td>${aluno.telefone}</td>
+                    <td>${aluno.plano}</td>
+                    <td>${aluno.status}</td>
+                   <td>
+    <button class="btn-edit" data-id="${aluno.id}">
+        ✏️
+    </button>
+
+    <button class="btn-delete" data-id="${aluno.id}">
+        🗑️
+    </button>
+</td>
+                </tr>
+            `;
+        });
+    })
+    .catch(error => {
+        console.error('Erro:', error);
+    });
+
+    window.editarAluno = function(id) {
+    alert("Editar aluno ID: " + id);
+};
+
+window.excluirAluno = function(id) {
+    alert("Excluir aluno ID: " + id);
+};
+tabela.addEventListener("click", (evento) => {
+    const id = Number(evento.target.dataset.id);
+    if (evento.target.classList.contains("btn-edit")) {
+    const linha = evento.target.closest("tr");
+    const colunas = linha.querySelectorAll("td");
+
+    alunoId.value = id;
+    nome.value = colunas[0].innerText;
+    email.value = colunas[1].innerText;
+    telefone.value = colunas[2].innerText;
+    plano.value = colunas[3].innerText;
+    statusAluno.value = colunas[4].innerText;
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+    if (evento.target.classList.contains("btn-delete")) {
+
+        if (confirm("Deseja excluir este aluno?")) {
+
+            fetch(`http://localhost:3000/api/alunos/${id}`, {
+                method: "DELETE"
+            })
+            .then(() => {
+                alert("Aluno excluído com sucesso!");
+                location.reload();
+            })
+            .catch(error => {
+                console.error(error);
+                alert("Erro ao excluir aluno.");
+            });
+
+        }
+    }
+});

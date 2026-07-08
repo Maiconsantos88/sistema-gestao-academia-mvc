@@ -1,52 +1,73 @@
-import { TreinoModel } from "./model/AcademiaModel.js";
-import { mostrarToast, protegerPagina, ativarMenuMobile } from "./utils/helpers.js";
+import { ativarMenuMobile, mostrarToast, protegerPagina } from "./utils/helpers.js";
 
 protegerPagina();
 ativarMenuMobile();
 
-const model = new TreinoModel();
 const form = document.getElementById("formTreino");
 const nomeTreino = document.getElementById("nomeTreino");
 const grupoTreino = document.getElementById("grupoTreino");
-const duracaoTreino = document.getElementById("duracaoTreino");
 const descricaoTreino = document.getElementById("descricaoTreino");
 const tabela = document.getElementById("tabelaTreinos");
 
-function renderizar() {
-  tabela.innerHTML = "";
-  model.listar().forEach(treino => {
-    const linha = document.createElement("tr");
-    linha.innerHTML = `
-      <td>${treino.nome}</td>
-      <td>${treino.grupo}</td>
-      <td>${treino.duracao}</td>
-      <td><button class="action-btn delete" data-id="${treino.id}">🗑️</button></td>
-    `;
-    tabela.appendChild(linha);
-  });
+async function carregarTreinos() {
+    const resposta = await fetch("http://localhost:3000/api/treinos");
+    const treinos = await resposta.json();
+
+    tabela.innerHTML = "";
+
+    treinos.forEach(treino => {
+        const linha = document.createElement("tr");
+
+        linha.innerHTML = `
+            <td>${treino.nome}</td>
+            <td>${treino.grupo_muscular}</td>
+            <td>${treino.duracao}</td>
+            <td>${treino.descricao}</td>
+            <td>
+                <button class="action-btn delete" data-id="${treino.id}">🗑️</button>
+            </td>
+        `;
+
+        tabela.appendChild(linha);
+    });
 }
 
-form.addEventListener("submit", (evento) => {
-  evento.preventDefault();
+form.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
 
-  model.cadastrar({
-    nome: nomeTreino.value.trim(),
-    grupo: grupoTreino.value.trim(),
-    duracao: duracaoTreino.value.trim(),
-    descricao: descricaoTreino.value.trim()
-  });
+    const dados = {
+        nome: nomeTreino.value.trim(),
+        grupo_muscular: grupoTreino.value.trim(),
+        duracao: duracaoTreino.value.trim(),
+        descricao: descricaoTreino.value.trim()
+    };
 
-  form.reset();
-  renderizar();
-  mostrarToast("Treino cadastrado com sucesso!");
+    await fetch("http://localhost:3000/api/treinos", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dados)
+    });
+
+    mostrarToast("Treino cadastrado com sucesso!");
+    form.reset();
+    carregarTreinos();
 });
 
-tabela.addEventListener("click", (evento) => {
-  if (evento.target.classList.contains("delete")) {
-    model.excluir(Number(evento.target.dataset.id));
-    renderizar();
-    mostrarToast("Treino excluído com sucesso!");
-  }
+tabela.addEventListener("click", async (evento) => {
+    const id = evento.target.dataset.id;
+
+    if (evento.target.classList.contains("delete")) {
+        if (confirm("Deseja excluir este treino?")) {
+            await fetch(`http://localhost:3000/api/treinos/${id}`, {
+                method: "DELETE"
+            });
+
+            mostrarToast("Treino excluído com sucesso!");
+            carregarTreinos();
+        }
+    }
 });
 
-renderizar();
+carregarTreinos();

@@ -1,11 +1,7 @@
-import { AlunoModel, PagamentoModel } from "./model/AcademiaModel.js";
-import { mostrarToast, formatarMoeda, protegerPagina, ativarMenuMobile } from "./utils/helpers.js";
+import { ativarMenuMobile, formatarMoeda, mostrarToast, protegerPagina } from "./utils/helpers.js";
 
 protegerPagina();
 ativarMenuMobile();
-
-const alunoModel = new AlunoModel();
-const model = new PagamentoModel();
 
 const form = document.getElementById("formPagamento");
 const alunoPagamento = document.getElementById("alunoPagamento");
@@ -14,51 +10,79 @@ const dataPagamento = document.getElementById("dataPagamento");
 const statusPagamento = document.getElementById("statusPagamento");
 const tabela = document.getElementById("tabelaPagamentos");
 
-function carregarAlunos() {
-  alunoPagamento.innerHTML = `<option value="">Selecione um aluno</option>`;
-  alunoModel.listar().forEach(aluno => {
-    alunoPagamento.innerHTML += `<option value="${aluno.nome}">${aluno.nome}</option>`;
-  });
+async function carregarAlunos() {
+    const resposta = await fetch("http://localhost:3000/api/alunos");
+    const alunos = await resposta.json();
+
+    alunoPagamento.innerHTML = '<option value="">Selecione um aluno</option>';
+
+    alunos.forEach(aluno => {
+        alunoPagamento.innerHTML += `
+            <option value="${aluno.nome}">${aluno.nome}</option>
+        `;
+    });
 }
 
-function renderizar() {
-  tabela.innerHTML = "";
+async function carregarPagamentos() {
+    const resposta = await fetch("http://localhost:3000/api/pagamentos");
+    const pagamentos = await resposta.json();
 
-  model.listar().forEach(pagamento => {
-    const linha = document.createElement("tr");
-    linha.innerHTML = `
-      <td>${pagamento.aluno}</td>
-      <td>${formatarMoeda(pagamento.valor)}</td>
-      <td>${pagamento.data}</td>
-      <td><span class="badge ${pagamento.status}">${pagamento.status}</span></td>
-      <td><button class="action-btn delete" data-id="${pagamento.id}">🗑️</button></td>
-    `;
-    tabela.appendChild(linha);
-  });
+    tabela.innerHTML = "";
+
+    pagamentos.forEach(pagamento => {
+        const linha = document.createElement("tr");
+
+        linha.innerHTML = `
+            <td>${pagamento.aluno}</td>
+            <td>${formatarMoeda(pagamento.valor)}</td>
+            <td>${pagamento.data_pagamento}</td>
+            <td>${pagamento.status}</td>
+            <td>
+                <button class="action-btn delete" data-id="${pagamento.id}">🗑️</button>
+            </td>
+        `;
+
+        tabela.appendChild(linha);
+    });
 }
 
-form.addEventListener("submit", (evento) => {
-  evento.preventDefault();
+form.addEventListener("submit", async (evento) => {
+    evento.preventDefault();
 
-  model.cadastrar({
-    aluno: alunoPagamento.value,
-    valor: Number(valorPagamento.value),
-    data: dataPagamento.value,
-    status: statusPagamento.value
-  });
+    const dados = {
+        aluno: alunoPagamento.value,
+        valor: Number(valorPagamento.value),
+        data_pagamento: dataPagamento.value,
+        status: statusPagamento.value
+    };
 
-  form.reset();
-  renderizar();
-  mostrarToast("Pagamento registrado com sucesso!");
+    await fetch("http://localhost:3000/api/pagamentos", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(dados)
+    });
+
+    mostrarToast("Pagamento cadastrado com sucesso!");
+    form.reset();
+    carregarPagamentos();
 });
 
-tabela.addEventListener("click", (evento) => {
-  if (evento.target.classList.contains("delete")) {
-    model.excluir(Number(evento.target.dataset.id));
-    renderizar();
-    mostrarToast("Pagamento excluído com sucesso!");
-  }
+tabela.addEventListener("click", async (evento) => {
+    const id = evento.target.dataset.id;
+
+    if (evento.target.classList.contains("delete")) {
+        if (confirm("Deseja excluir este pagamento?")) {
+            await fetch(`http://localhost:3000/api/pagamentos/${id}`, {
+                method: "DELETE"
+            });
+
+            mostrarToast("Pagamento excluído com sucesso!");
+            carregarPagamentos();
+        }
+    }
 });
 
 carregarAlunos();
-renderizar();
+carregarPagamentos();
