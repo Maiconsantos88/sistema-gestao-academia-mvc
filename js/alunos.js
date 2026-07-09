@@ -33,7 +33,7 @@ async function carregarPlanos() {
 
     planos.forEach(item => {
         plano.innerHTML += `
-            <option value="${item.nome}">${item.nome}</option>
+            <option value="${item.id}">${item.nome}</option>
         `;
     });
 }
@@ -103,7 +103,7 @@ form.addEventListener("submit", (evento) => {
     nome: nome.value.trim(),
     email: email.value.trim(),
     telefone: telefone.value.trim(),
-    plano: plano.value,
+    plano_id: Number(plano.value),
     dataInicio: dataInicio.value,
     status: statusAluno.value,
     observacoes: observacoes.value.trim()
@@ -168,7 +168,7 @@ tabela.addEventListener("click", (evento) => {
     nome.value = aluno.nome;
     email.value = aluno.email;
     telefone.value = aluno.telefone;
-    plano.value = aluno.plano;
+    plano.value = aluno.plano_id;
     dataInicio.value = aluno.dataInicio;
     statusAluno.value = aluno.status;
     observacoes.value = aluno.observacoes;

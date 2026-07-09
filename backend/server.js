@@ -26,7 +26,17 @@ db.connect((err) => {
 });
 
 app.get('/api/alunos', (req, res) => {
-    db.query('SELECT * FROM alunos', (err, results) => {
+
+    const sql = `
+    SELECT
+        alunos.*,
+        planos.nome AS plano
+    FROM alunos
+    LEFT JOIN planos
+    ON alunos.plano_id = planos.id
+    `;
+
+    db.query(sql, (err, results) => {
         if (err) {
             console.error('Erro na consulta:', err);
             return res.status(500).json(err);
@@ -34,17 +44,18 @@ app.get('/api/alunos', (req, res) => {
 
         res.json(results);
     });
+
 });
 
 app.post('/api/alunos', (req, res) => {
-    const { nome, email, telefone, plano, status } = req.body;
+    const { nome, email, telefone, plano_id, status } = req.body;
 
     const sql = `
-        INSERT INTO alunos (nome, email, telefone, plano, status)
+        INSERT INTO alunos (nome, email, telefone, plano_id, status)
         VALUES (?, ?, ?, ?, ?)
     `;
 
-    db.query(sql, [nome, email, telefone, plano, status], (err, result) => {
+    db.query(sql, [nome, email, telefone, plano_id, status], (err, result) => {
         if (err) {
             console.error('Erro ao cadastrar aluno:', err);
             return res.status(500).json(err);
