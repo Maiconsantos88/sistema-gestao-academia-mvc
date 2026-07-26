@@ -3,28 +3,318 @@ import { ativarMenuMobile, formatarMoeda, protegerPagina } from "./utils/helpers
 protegerPagina();
 ativarMenuMobile();
 
-document.getElementById("totalAlunos").textContent = alunos.filter(a => a.status === "Ativo").length;
-document.getElementById("totalPlanos").textContent = planos.length;
-document.getElementById("totalTreinos").textContent = treinos.length;
+let alunosBusca = [];
+let planosBusca = [];
+let treinosBusca = [];
+let pagamentosBusca = [];
 
-const receita = pagamentos
-  .filter(p => p.status === "Pago")
-  .reduce((total, p) => total + Number(p.valor), 0);
+async function carregarDashboard() {
+  try {
+    const [
+      respostaAlunos,
+      respostaPlanos,
+      respostaTreinos,
+      respostaPagamentos
+    ] = await Promise.all([
+      fetch("http://localhost:3000/api/alunos"),
+      fetch("http://localhost:3000/api/planos"),
+      fetch("http://localhost:3000/api/treinos"),
+      fetch("http://localhost:3000/api/pagamentos")
+    ]);
 
-document.getElementById("receitaMes").textContent = formatarMoeda(receita);
+    const alunos = await respostaAlunos.json();
+    const planos = await respostaPlanos.json();
+    const treinos = await respostaTreinos.json();
+    const pagamentos = await respostaPagamentos.json();
 
-const listaRecentes = document.getElementById("alunosRecentes");
-listaRecentes.innerHTML = "";
+    alunosBusca = alunos;
+    planosBusca = planos;
+    treinosBusca = treinos;
+    pagamentosBusca = pagamentos;
 
-alunos.slice(-5).reverse().forEach(aluno => {
-  const item = document.createElement("div");
-  item.className = "recent-item";
-  item.innerHTML = `
-    <div>
-      <strong>${aluno.nome}</strong><br>
-      <small>${aluno.plano}</small>
-    </div>
-    <span class="badge ${aluno.status}">${aluno.status}</span>
-  `;
-  listaRecentes.appendChild(item);
+    document.getElementById("totalAlunos").textContent =
+      alunos.filter((aluno) => aluno.status === "Ativo").length;
+
+    document.getElementById("totalPlanos").textContent = planos.length;
+    document.getElementById("totalTreinos").textContent = treinos.length;
+
+    const receita = pagamentos
+      .filter((pagamento) => pagamento.status === "Pago")
+      .reduce(
+        (total, pagamento) =>
+          total + Number(pagamento.valor),
+        0
+      );
+
+    document.getElementById("receitaMes").textContent =
+      formatarMoeda(receita);
+
+    const listaRecentes =
+      document.getElementById("alunosRecentes");
+
+    listaRecentes.innerHTML = "";
+
+    alunos
+      .slice(-5)
+      .reverse()
+      .forEach((aluno) => {
+        const item = document.createElement("div");
+        item.className = "recent-item";
+
+        item.innerHTML = `
+                    <div>
+                        <strong>${aluno.nome}</strong><br>
+                        <small>${aluno.plano || "Sem plano"}</small>
+                    </div>
+
+                    <span class="badge ${aluno.status}">
+                        ${aluno.status}
+                    </span>
+                `;
+
+        listaRecentes.appendChild(item);
+      });
+  } catch (erro) {
+    console.error("Erro ao carregar Dashboard:", erro);
+  }
+}
+
+carregarDashboard();
+
+const btnNotificacoes = document.getElementById("btnNotificacoes");
+const painelNotificacoes = document.getElementById("painelNotificacoes");
+
+const btnConfiguracoes = document.getElementById("btnConfiguracoes");
+const menuConfiguracoes = document.getElementById("menuConfiguracoes");
+
+const btnSairTopo = document.getElementById("btnSairTopo");
+const btnPerfilTopo = document.getElementById("btnPerfilTopo");
+
+btnPerfilTopo.addEventListener("click", () => {
+  menuConfiguracoes.classList.toggle("hidden");
+  painelNotificacoes.classList.add("hidden");
+});
+
+btnNotificacoes.addEventListener("click", () => {
+  painelNotificacoes.classList.toggle("hidden");
+  menuConfiguracoes.classList.add("hidden");
+});
+
+btnConfiguracoes.addEventListener("click", () => {
+  menuConfiguracoes.classList.toggle("hidden");
+  painelNotificacoes.classList.add("hidden");
+});
+
+btnSairTopo.addEventListener("click", () => {
+  localStorage.removeItem("usuarioLogado");
+  window.location.href = "index.html";
+});
+
+document.addEventListener("click", (evento) => {
+  if (!evento.target.closest(".menu-topo")) {
+    painelNotificacoes.classList.add("hidden");
+    menuConfiguracoes.classList.add("hidden");
+  }
+});
+
+const btnAbrirConfiguracoes =
+  document.getElementById("btnAbrirConfiguracoes");
+
+const modalConfiguracoes =
+  document.getElementById("modalConfiguracoes");
+
+const btnFecharConfiguracoes =
+  document.getElementById("btnFecharConfiguracoes");
+
+const temaSistema =
+  document.getElementById("temaSistema");
+
+function aplicarTema(tema) {
+  const sistemaEscuro = window.matchMedia(
+    "(prefers-color-scheme: dark)"
+  ).matches;
+
+  const usarEscuro =
+    tema === "dark" ||
+    (tema === "system" && sistemaEscuro);
+
+  document.body.classList.toggle(
+    "dark-mode",
+    usarEscuro
+  );
+}
+
+btnAbrirConfiguracoes.addEventListener("click", (evento) => {
+  evento.stopPropagation();
+
+  modalConfiguracoes.classList.remove("hidden");
+  menuConfiguracoes.classList.add("hidden");
+});
+
+btnFecharConfiguracoes.addEventListener("click", () => {
+  modalConfiguracoes.classList.add("hidden");
+});
+
+modalConfiguracoes.addEventListener("click", (evento) => {
+  if (evento.target === modalConfiguracoes) {
+    modalConfiguracoes.classList.add("hidden");
+  }
+});
+
+const temaSalvo =
+  localStorage.getItem("temaSistema") || "system";
+
+temaSistema.value = temaSalvo;
+aplicarTema(temaSalvo);
+
+temaSistema.addEventListener("change", () => {
+  const temaSelecionado = temaSistema.value;
+
+  localStorage.setItem(
+    "temaSistema",
+    temaSelecionado
+  );
+
+  aplicarTema(temaSelecionado);
+});
+
+const buscaGlobal = document.getElementById("buscaGlobal");
+const resultadoBusca = document.getElementById("resultadoBusca");
+
+function normalizarTexto(texto) {
+  return String(texto || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function criarResultado(tipo, titulo, detalhe, pagina) {
+  return {
+    tipo,
+    titulo,
+    detalhe,
+    pagina
+  };
+}
+
+
+buscaGlobal.addEventListener("input", () => {
+  const termo = normalizarTexto(buscaGlobal.value.trim());
+
+  if (termo.length < 2) {
+    resultadoBusca.innerHTML = "";
+    resultadoBusca.classList.add("hidden");
+    return;
+  }
+
+  const resultados = [];
+
+  alunosBusca.forEach((aluno) => {
+    const texto = normalizarTexto(
+      `${aluno.nome} ${aluno.email} ${aluno.telefone} ${aluno.plano}`
+    );
+
+    if (texto.includes(termo)) {
+      resultados.push(
+        criarResultado(
+          "👤 Aluno",
+          aluno.nome,
+          aluno.email || aluno.plano || "",
+          "alunos.html"
+        )
+      );
+    }
+  });
+
+  planosBusca.forEach((plano) => {
+    const texto = normalizarTexto(
+      `${plano.nome} ${plano.valor} ${plano.duracao}`
+    );
+
+    if (texto.includes(termo)) {
+      resultados.push(
+        criarResultado(
+          "📋 Plano",
+          plano.nome,
+          plano.valor
+            ? formatarMoeda(plano.valor)
+            : "",
+          "planos.html"
+        )
+      );
+    }
+  });
+
+  treinosBusca.forEach((treino) => {
+    const texto = normalizarTexto(
+      `${treino.nome} ${treino.aluno} ${treino.grupo_muscular} ${treino.descricao}`
+    );
+
+    if (texto.includes(termo)) {
+      resultados.push(
+        criarResultado(
+          "🏋️ Treino",
+          treino.nome,
+          treino.aluno || treino.grupo_muscular || "",
+          "treinos.html"
+        )
+      );
+    }
+  });
+
+  pagamentosBusca.forEach((pagamento) => {
+    const texto = normalizarTexto(
+      `${pagamento.aluno} ${pagamento.valor} ${pagamento.status}`
+    );
+
+    if (texto.includes(termo)) {
+      resultados.push(
+        criarResultado(
+          "💳 Pagamento",
+          pagamento.aluno,
+          `${formatarMoeda(pagamento.valor)} • ${pagamento.status}`,
+          "pagamentos.html"
+        )
+      );
+    }
+  });
+
+  resultadoBusca.innerHTML = "";
+
+  if (resultados.length === 0) {
+    resultadoBusca.innerHTML = `
+            <div class="resultado-item">
+                <strong>Nenhum resultado encontrado</strong>
+                <small>Tente outro termo.</small>
+            </div>
+        `;
+  } else {
+    resultados.slice(0, 8).forEach((resultado) => {
+      const item = document.createElement("div");
+      item.className = "resultado-item";
+
+      item.innerHTML = `
+    <strong>${resultado.titulo}</strong>
+    <small>${resultado.tipo}</small>
+    <small>${resultado.detalhe}</small>
+`;
+
+      item.addEventListener("click", () => {
+        window.location.href = resultado.pagina;
+      });
+
+      resultadoBusca.appendChild(item);
+    });
+  }
+
+  resultadoBusca.classList.remove("hidden");
+});
+
+document.addEventListener("click", (evento) => {
+  if (
+    !evento.target.closest("#buscaGlobal") &&
+    !evento.target.closest("#resultadoBusca")
+  ) {
+    resultadoBusca.classList.add("hidden");
+  }
 });

@@ -1,109 +1,142 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Alunos - Fitness Academia</title>
 
-    <link rel="stylesheet"
-          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    />
 
     <link rel="stylesheet" href="css/style.css" />
-</head>
-<body>
-  <aside class="sidebar">
-    <div class="logo"><div class="logo-icon">🏋️</div><h2>FITNESS <span>ACADEMIA</span></h2></div>
-    <nav class="menu">
-      <p>NAVEGAÇÃO</p>
-      <a href="dashboard.html">🏠 Dashboard</a>
-      <a class="active" href="alunos.html">👥 Alunos</a>
-      <a href="planos.html">📋 Planos</a>
-      <a href="pagamentos.html">💳 Pagamentos</a>
-      <a href="treinos.html">🏋️ Treinos</a>
-    </nav>
-    <button id="btnSair" class="btn-logout">↪ Sair</button>
-  </aside>
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">🏋️</div>
+        <h2>FITNESS <span>ACADEMIA</span></h2>
+      </div>
+      <nav class="menu">
+        <p>NAVEGAÇÃO</p>
+        <a href="dashboard.html">🏠 Dashboard</a>
+        <a class="active" href="alunos.html">👥 Alunos</a>
+        <a href="planos.html">📋 Planos</a>
+        <a href="pagamentos.html">💳 Pagamentos</a>
+        <a href="treinos.html">🏋️ Treinos</a>
+      </nav>
+      <button id="btnSair" class="btn-logout">↪ Sair</button>
+    </aside>
 
-  <main class="main-content">
-    <header class="topbar"><button class="mobile-menu" id="btnMenu">☰</button><h1>Cadastro de Alunos</h1></header>
+    <main class="main-content">
+      <header class="topbar">
+        <button class="mobile-menu" id="btnMenu">☰</button>
+        <h1>Cadastro de Alunos</h1>
+      </header>
 
-    <section class="content-grid">
-      <article class="panel form-panel">
-        <h2 id="tituloFormulario">Novo aluno</h2>
+      <section class="content-grid">
+        <article class="panel form-panel">
+          <h2 id="tituloFormulario">Novo aluno</h2>
 
-        <form id="formAluno">
-          <input type="hidden" id="alunoId" />
+          <form id="formAluno">
+            <input type="hidden" id="alunoId" />
 
-          <label>Nome completo</label>
-          <input id="nome" type="text" placeholder="Digite o nome completo" required />
+            <label>Nome completo</label>
+            <input
+              id="nome"
+              type="text"
+              placeholder="Digite o nome completo"
+              required
+            />
 
-          <label>E-mail</label>
-          <input id="email" type="email" placeholder="Digite o e-mail" required />
+            <label>E-mail</label>
+            <input
+              id="email"
+              type="email"
+              placeholder="Digite o e-mail"
+              required
+            />
 
-          <label>Telefone</label>
-          <input id="telefone" type="text" placeholder="(00) 00000-0000" maxlength="15" required />
+            <label>Telefone</label>
+            <input
+              id="telefone"
+              type="text"
+              placeholder="(00) 00000-0000"
+              maxlength="15"
+              required
+            />
 
-          <label for="plano">Plano</label>
-          <select id="plano" required>
-          <option value="">Selecione um plano</option>
-          </select>
+            <label for="plano">Plano</label>
+            <select id="plano" required>
+              <option value="">Selecione um plano</option>
+            </select>
 
-          <label>Data de início</label>
-          <input id="dataInicio" type="date" required />
+            <label>Data de início</label>
+            <input id="dataInicio" type="date" required />
 
-          <label>Status</label>
-          <select id="status">
-            <option value="Ativo">Ativo</option>
-            <option value="Inativo">Inativo</option>
-          </select>
+            <label>Status</label>
+            <select id="status">
+              <option value="Ativo">Ativo</option>
+              <option value="Inativo">Inativo</option>
+            </select>
 
-          <label>Observações</label>
-          <textarea id="observacoes" placeholder="Digite observações opcionais"></textarea>
+            <label>Observações</label>
+            <textarea
+              id="observacoes"
+              placeholder="Digite observações opcionais"
+            ></textarea>
 
-          <div class="form-actions">
-            <button type="button" id="btnCancelar" class="btn-secondary">Cancelar</button>
-            <button type="submit" class="btn-primary">Salvar aluno</button>
+            <div class="form-actions">
+              <button type="button" id="btnCancelar" class="btn-secondary">
+                Cancelar
+              </button>
+              <button type="submit" class="btn-primary">Salvar aluno</button>
+            </div>
+          </form>
+        </article>
+
+        <article class="panel list-panel">
+          <div class="panel-title">
+            <h2>Lista de alunos</h2>
+            <input
+              id="busca"
+              type="text"
+              placeholder="Buscar por nome ou e-mail"
+            />
           </div>
-        </form>
-      </article>
 
-      <article class="panel list-panel">
-        <div class="panel-title">
-          <h2>Lista de alunos</h2>
-          <input id="busca" type="text" placeholder="Buscar por nome ou e-mail" />
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th>E-mail</th>
+                  <th>Telefone</th>
+                  <th>Plano</th>
+                  <th>Status</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaAlunos"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+    </main>
+
+    <div id="modalConfirmacao" class="modal hidden">
+      <div class="modal-box">
+        <h2>Confirmar exclusão</h2>
+        <p>Deseja realmente excluir este aluno?</p>
+        <div class="form-actions">
+          <button id="btnNaoExcluir" class="btn-secondary">Cancelar</button>
+          <button id="btnSimExcluir" class="btn-danger">Excluir</button>
         </div>
-
-        <div class="table-wrapper">
-          <table>
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>E-mail</th>
-                <th>Telefone</th>
-                <th>Plano</th>
-                <th>Status</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
-            <tbody id="tabelaAlunos"></tbody>
-          </table>
-        </div>
-      </article>
-    </section>
-  </main>
-
-  <div id="modalConfirmacao" class="modal hidden">
-    <div class="modal-box">
-      <h2>Confirmar exclusão</h2>
-      <p>Deseja realmente excluir este aluno?</p>
-      <div class="form-actions">
-        <button id="btnNaoExcluir" class="btn-secondary">Cancelar</button>
-        <button id="btnSimExcluir" class="btn-danger">Excluir</button>
       </div>
     </div>
-  </div>
 
-  <div id="toast" class="toast"></div>
-  <script type="module" src="js/alunos.js"></script>
-</body>
+    <div id="toast" class="toast"></div>
+    <script type="module" src="js/alunos.js"></script>
+  </body>
 </html>

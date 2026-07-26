@@ -1,73 +1,97 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Treinos - Fitness Academia</title>
-  <link rel="stylesheet" href="css/style.css" />
-</head>
-<body>
-  <aside class="sidebar">
-    <div class="logo"><div class="logo-icon">🏋️</div><h2>FITNESS <span>ACADEMIA</span></h2></div>
-    <nav class="menu">
-      <p>NAVEGAÇÃO</p>
-      <a href="dashboard.html">🏠 Dashboard</a>
-      <a href="alunos.html">👥 Alunos</a>
-      <a href="planos.html">📋 Planos</a>
-      <a href="pagamentos.html">💳 Pagamentos</a>
-      <a class="active" href="treinos.html">🏋️ Treinos</a>
-    </nav>
-    <button id="btnSair" class="btn-logout">↪ Sair</button>
-  </aside>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Treinos - Fitness Academia</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">🏋️</div>
+        <h2>FITNESS <span>ACADEMIA</span></h2>
+      </div>
+      <nav class="menu">
+        <p>NAVEGAÇÃO</p>
+        <a href="dashboard.html">🏠 Dashboard</a>
+        <a href="alunos.html">👥 Alunos</a>
+        <a href="planos.html">📋 Planos</a>
+        <a href="pagamentos.html">💳 Pagamentos</a>
+        <a class="active" href="treinos.html">🏋️ Treinos</a>
+      </nav>
+      <button id="btnSair" class="btn-logout">↪ Sair</button>
+    </aside>
 
-  <main class="main-content">
-    <header class="topbar"><button class="mobile-menu" id="btnMenu">☰</button><h1>Treinos</h1></header>
+    <main class="main-content">
+      <header class="topbar">
+        <button class="mobile-menu" id="btnMenu">☰</button>
+        <h1>Treinos</h1>
+      </header>
 
-    <section class="content-grid">
-      <article class="panel form-panel">
-        <h2>Novo treino</h2>
-        <form id="formTreino">
+      <section class="content-grid">
+        <article class="panel form-panel">
+          <h2>Novo treino</h2>
+          <form id="formTreino">
+            <label>Aluno</label>
+            <select id="alunoTreino" required>
+              <option value="">Selecione um aluno</option>
+            </select>
 
-          <label>Aluno</label>
-          <select id="alunoTreino" required>
-            <option value="">Selecione um aluno</option>
-          </select>
+            <label>Nome do treino</label>
+            <input
+              id="nomeTreino"
+              type="text"
+              placeholder="Treino A - Hipertrofia"
+              required
+            />
+            <label>Grupo muscular</label>
+            <input
+              id="grupoTreino"
+              type="text"
+              placeholder="Peito / Tríceps"
+              required
+            />
+            <label>Duração</label>
+            <input
+              id="duracaoTreino"
+              type="text"
+              placeholder="60 min"
+              required
+            />
+            <label>Descrição</label>
+            <textarea
+              id="descricaoTreino"
+              placeholder="Exercícios e observações"
+            ></textarea>
+            <button type="submit" class="btn-primary full">
+              Salvar treino
+            </button>
+          </form>
+        </article>
 
-          <label>Nome do treino</label>
-          <input id="nomeTreino" type="text" placeholder="Treino A - Hipertrofia" required />
-          <label>Grupo muscular</label>
-          <input id="grupoTreino" type="text" placeholder="Peito / Tríceps" required />
-          <label>Duração</label>
-          <input id="duracaoTreino" type="text" placeholder="60 min" required />
-          <label>Descrição</label>
-          <textarea id="descricaoTreino" placeholder="Exercícios e observações"></textarea>
-          <button type="submit" class="btn-primary full">Salvar treino</button>
-        </form>
-      </article>
+        <article class="panel list-panel">
+          <h2>Treinos cadastrados</h2>
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Aluno</th>
+                  <th>Treino</th>
+                  <th>Grupo</th>
+                  <th>Duração</th>
+                  <th>Descrição</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tabelaTreinos"></tbody>
+            </table>
+          </div>
+        </article>
+      </section>
+    </main>
 
-      <article class="panel list-panel">
-        <h2>Treinos cadastrados</h2>
-        <div class="table-wrapper">
-          <table>
-            <thead>
-            
-    <tr>
-        <th>Aluno</th>
-        <th>Treino</th>
-        <th>Grupo</th>
-        <th>Duração</th>
-        <th>Descrição</th>
-        <th>Ações</th>
-    </tr>
-</thead>
-            <tbody id="tabelaTreinos"></tbody>
-          </table>
-        </div>
-      </article>
-    </section>
-  </main>
-
-  <div id="toast" class="toast"></div>
-  <script type="module" src="js/treinos.js"></script>
-</body>
+    <div id="toast" class="toast"></div>
+    <script type="module" src="js/treinos.js"></script>
+  </body>
 </html>

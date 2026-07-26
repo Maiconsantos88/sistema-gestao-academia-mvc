@@ -1,131 +1,292 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard - Fitness Academia</title>
-  <link rel="stylesheet" href="css/style.css" />
-</head>
-<body>
-  <aside class="sidebar">
-    <div class="logo">
-      <div class="logo-icon">🏋️</div>
-      <h2>FITNESS <span>ACADEMIA</span></h2>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard - Fitness Academia</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <div id="modalConfiguracoes" class="modal hidden">
+    <div class="config-panel">
+      <div class="config-header">
+        <h2>⚙️ Configurações</h2>
+
+        <button id="btnFecharConfiguracoes" class="config-close" type="button">
+          ✕
+        </button>
+      </div>
+
+      <div class="config-layout">
+        <aside class="config-sidebar">
+          <button class="config-item active" data-tab="geral">⚙️ Geral</button>
+
+          <button class="config-item" data-tab="aparencia">🌙 Aparência</button>
+
+          <button class="config-item" data-tab="seguranca">🔒 Segurança</button>
+
+          <button class="config-item" data-tab="conta">👤 Conta</button>
+
+          <button class="config-item" data-tab="sobre">ℹ️ Sobre</button>
+        </aside>
+
+        <div class="config-body">
+          <div class="config-content" id="tab-geral">
+            <div class="config-row">
+              <label>Aparência</label>
+
+              <select id="temaSistema">
+                <option value="light">☀️ Claro</option>
+                <option value="dark">🌙 Escuro</option>
+                <option value="system">💻 Sistema</option>
+              </select>
+            </div>
+
+            <div class="config-row">
+              <label>Idioma</label>
+
+              <select id="idiomaSistema">
+                <option value="pt-BR">Português</option>
+                <option value="en">English</option>
+                <option value="es">Español</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <nav class="menu">
-      <p>NAVEGAÇÃO</p>
-      <a class="active" href="dashboard.html">🏠 Dashboard</a>
-      <a href="alunos.html">👥 Alunos</a>
-      <a href="planos.html">📋 Planos</a>
-      <a href="pagamentos.html">💳 Pagamentos</a>
-      <a href="treinos.html">🏋️ Treinos</a>
-    </nav>
+  <body>
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">🏋️</div>
+        <h2>FITNESS <span>ACADEMIA</span></h2>
+      </div>
 
-    <div class="sidebar-user">
-      <strong>Administrador</strong>
-      <span>admin@academia.com</span>
-      <small>● Online</small>
-    </div>
+      <nav class="menu">
+        <p>NAVEGAÇÃO</p>
+        <a class="active" href="dashboard.html">🏠 Dashboard</a>
+        <a href="alunos.html">👥 Alunos</a>
+        <a href="planos.html">📋 Planos</a>
+        <a href="pagamentos.html">💳 Pagamentos</a>
+        <a href="treinos.html">🏋️ Treinos</a>
+      </nav>
 
-    <button id="btnSair" class="btn-logout">↪ Sair</button>
-  </aside>
-
-  <main class="main-content">
-    <header class="topbar">
-      <button class="mobile-menu" id="btnMenu">☰</button>
-      <input type="text" placeholder="Buscar aluno, plano, treino..." />
-      <div class="admin-area">
-        <span>🔔</span>
-        <span>⚙️</span>
+      <div class="sidebar-user">
         <strong>Administrador</strong>
+        <span>admin@academia.com</span>
+        <small>● Online</small>
       </div>
-    </header>
 
-    <section class="welcome">
-      <div>
-        <h1>Bem-vindo de volta, Administrador! 💪</h1>
-        <p>Aqui está o resumo da sua academia hoje.</p>
+      <button id="btnSair" class="btn-logout">↪ Sair</button>
+    </aside>
+
+    <main class="main-content">
+      <header class="topbar">
+        <button class="mobile-menu" id="btnMenu">☰</button>
+
+        <div class="busca-container">
+          <input
+            id="buscaGlobal"
+            type="text"
+            placeholder="Buscar aluno, plano, treino..."
+          />
+
+          <div id="resultadoBusca" class="resultado-busca hidden"></div>
+        </div>
+
+        <div class="admin-area">
+          <div class="menu-topo">
+            <button
+              id="btnNotificacoes"
+              class="icon-btn"
+              title="Notificações"
+              type="button"
+            >
+              🔔
+            </button>
+
+            <div id="painelNotificacoes" class="dropdown-topo hidden">
+              <strong>Notificações</strong>
+              <p>Nenhuma notificação no momento.</p>
+            </div>
+          </div>
+
+          <div class="menu-topo">
+            <button
+              id="btnConfiguracoes"
+              class="icon-btn"
+              title="Configurações"
+              type="button"
+            >
+              ⚙️
+            </button>
+            <div id="menuConfiguracoes" class="dropdown-topo hidden">
+              <button id="btnAbrirConfiguracoes" type="button">
+                ⚙️ Configurações
+              </button>
+
+              <button id="btnPerfil" type="button">👤 Meu perfil</button>
+
+              <button id="btnSairTopo" type="button">🚪 Sair</button>
+            </div>
+          </div>
+
+          <button
+            id="btnPerfilTopo"
+            class="perfil-topo"
+            type="button"
+            title="Perfil"
+          >
+            <span class="perfil-avatar">A</span>
+            <span class="perfil-nome">Administrador</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="welcome">
+        <div>
+          <h1>Bem-vindo de volta, Administrador! 💪</h1>
+          <p>Aqui está o resumo da sua academia hoje.</p>
+        </div>
+        <a href="alunos.html" class="btn-primary">+ Novo Aluno</a>
+      </section>
+
+      <section class="stats-grid">
+        <article class="stat-card purple">
+          <span>👥</span>
+          <div>
+            <p>Alunos Ativos</p>
+            <h2 id="totalAlunos">0</h2>
+            <small>Controle de alunos</small>
+          </div>
+        </article>
+
+        <article class="stat-card blue">
+          <span>📋</span>
+          <div>
+            <p>Planos Ativos</p>
+            <h2 id="totalPlanos">0</h2>
+            <small>Planos cadastrados</small>
+          </div>
+        </article>
+
+        <article class="stat-card green">
+          <span>💰</span>
+          <div>
+            <p>Receita do Mês</p>
+            <h2 id="receitaMes">R$ 0,00</h2>
+            <small>Pagamentos registrados</small>
+          </div>
+        </article>
+
+        <article class="stat-card orange">
+          <span>🏋️</span>
+          <div>
+            <p>Treinos Hoje</p>
+            <h2 id="totalTreinos">0</h2>
+            <small>Treinos cadastrados</small>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid">
+        <article class="panel banner">
+          <div>
+            <h2>Transforme vidas. Transforme você.</h2>
+            <p>Gerencie alunos, planos, pagamentos e treinos em um só lugar.</p>
+          </div>
+        </article>
+
+        <article class="panel">
+          <h2>Ações rápidas</h2>
+          <div class="quick-actions">
+            <a href="alunos.html">👤 Novo Aluno</a>
+            <a href="planos.html">📋 Novo Plano</a>
+            <a href="pagamentos.html">💰 Novo Pagamento</a>
+            <a href="treinos.html">🏋️ Novo Treino</a>
+          </div>
+        </article>
+
+        <article class="panel">
+          <h2>Alunos recentes</h2>
+          <div id="alunosRecentes" class="recent-list"></div>
+        </article>
+
+        <article class="panel">
+          <h2>Arquitetura MVC</h2>
+          <div class="mvc-flow">
+            <span>View</span>
+            <b>→</b>
+            <span>Controller</span>
+            <b>→</b>
+            <span>Model</span>
+          </div>
+          <p class="muted">
+            Sistema criado para demonstrar o padrão MVC com HTML, CSS e
+            JavaScript.
+          </p>
+        </article>
+      </section>
+    </main>
+
+    <div id="toast" class="toast"></div>
+
+    <div id="modalConfiguracoes" class="modal hidden">
+      <div class="config-panel">
+        <div class="config-header">
+          <h2>Geral</h2>
+
+          <button
+            id="btnFecharConfiguracoes"
+            class="config-close"
+            type="button"
+          >
+            ✕
+          </button>
+        </div>
+
+        <div class="config-row">
+          <label for="aparenciaSistema">Aparência</label>
+
+          <select id="aparenciaSistema">
+            <option value="light">Claro</option>
+            <option value="dark">Escuro</option>
+            <option value="system">Sistema</option>
+          </select>
+        </div>
+
+        <div class="config-row">
+          <label for="contrasteSistema">Contraste</label>
+
+          <select id="contrasteSistema">
+            <option value="normal">Normal</option>
+            <option value="high">Alto contraste</option>
+            <option value="system">Sistema</option>
+          </select>
+        </div>
+        <div class="config-row">
+          <label for="corEnfase">Cor de ênfase</label>
+
+          <select id="corEnfase">
+            <option value="purple">Roxo</option>
+            <option value="blue">Azul</option>
+            <option value="green">Verde</option>
+            <option value="orange">Laranja</option>
+          </select>
+        </div>
+
+        <div class="config-row">
+          <label for="idiomaSistema">Idioma</label>
+
+          <select id="idiomaSistema">
+            <option value="pt-BR">Português</option>
+            <option value="auto">Autodetectar</option>
+          </select>
+        </div>
       </div>
-      <a href="alunos.html" class="btn-primary">+ Novo Aluno</a>
-    </section>
-
-    <section class="stats-grid">
-      <article class="stat-card purple">
-        <span>👥</span>
-        <div>
-          <p>Alunos Ativos</p>
-          <h2 id="totalAlunos">0</h2>
-          <small>Controle de alunos</small>
-        </div>
-      </article>
-
-      <article class="stat-card blue">
-        <span>📋</span>
-        <div>
-          <p>Planos Ativos</p>
-          <h2 id="totalPlanos">0</h2>
-          <small>Planos cadastrados</small>
-        </div>
-      </article>
-
-      <article class="stat-card green">
-        <span>💰</span>
-        <div>
-          <p>Receita do Mês</p>
-          <h2 id="receitaMes">R$ 0,00</h2>
-          <small>Pagamentos registrados</small>
-        </div>
-      </article>
-
-      <article class="stat-card orange">
-        <span>🏋️</span>
-        <div>
-          <p>Treinos Hoje</p>
-          <h2 id="totalTreinos">0</h2>
-          <small>Treinos cadastrados</small>
-        </div>
-      </article>
-    </section>
-
-    <section class="dashboard-grid">
-      <article class="panel banner">
-        <div>
-          <h2>Transforme vidas. Transforme você.</h2>
-          <p>Gerencie alunos, planos, pagamentos e treinos em um só lugar.</p>
-        </div>
-      </article>
-
-      <article class="panel">
-        <h2>Ações rápidas</h2>
-        <div class="quick-actions">
-          <a href="alunos.html">👤 Novo Aluno</a>
-          <a href="planos.html">📋 Novo Plano</a>
-          <a href="pagamentos.html">💰 Novo Pagamento</a>
-          <a href="treinos.html">🏋️ Novo Treino</a>
-        </div>
-      </article>
-
-      <article class="panel">
-        <h2>Alunos recentes</h2>
-        <div id="alunosRecentes" class="recent-list"></div>
-      </article>
-
-      <article class="panel">
-        <h2>Arquitetura MVC</h2>
-        <div class="mvc-flow">
-          <span>View</span>
-          <b>→</b>
-          <span>Controller</span>
-          <b>→</b>
-          <span>Model</span>
-        </div>
-        <p class="muted">Sistema criado para demonstrar o padrão MVC com HTML, CSS e JavaScript.</p>
-      </article>
-    </section>
-  </main>
-
-  <div id="toast" class="toast"></div>
-  <script type="module" src="js/dashboard.js"></script>
-</body>
+    </div>
+    <script type="module" src="js/dashboard.js"></script>
+  </body>
 </html>
