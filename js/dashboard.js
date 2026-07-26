@@ -1,18 +1,7 @@
-import { AlunoModel, PlanoModel, PagamentoModel, TreinoModel } from "./model/AcademiaModel.js";
-import { formatarMoeda, protegerPagina, ativarMenuMobile } from "./utils/helpers.js";
+import { ativarMenuMobile, formatarMoeda, protegerPagina } from "./utils/helpers.js";
 
 protegerPagina();
 ativarMenuMobile();
-
-const alunoModel = new AlunoModel();
-const planoModel = new PlanoModel();
-const pagamentoModel = new PagamentoModel();
-const treinoModel = new TreinoModel();
-
-const alunos = alunoModel.listar();
-const planos = planoModel.listar();
-const pagamentos = pagamentoModel.listar();
-const treinos = treinoModel.listar();
 
 document.getElementById("totalAlunos").textContent = alunos.filter(a => a.status === "Ativo").length;
 document.getElementById("totalPlanos").textContent = planos.length;

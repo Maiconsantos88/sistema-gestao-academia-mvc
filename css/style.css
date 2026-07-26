@@ -500,6 +500,19 @@ td {
   color: #1f2937;
 }
 
+/* Coluna Aluno */
+td:first-child {
+    white-space: nowrap;
+}
+
+/* Coluna Descrição */
+td:nth-child(5) {
+    max-width: 350px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .action-btn {
   border: none;
   padding: 8px 10px;

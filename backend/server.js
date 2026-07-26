@@ -91,18 +91,22 @@ app.put('/api/alunos/:id', (req, res) => {
         nome,
         email,
         telefone,
-        plano,
+        plano_id,
         status
     } = req.body;
 
     db.query(
         `UPDATE alunos
-         SET nome = ?, email = ?, telefone = ?, plano = ?, status = ?
+         SET nome = ?,
+             email = ?,
+             telefone = ?,
+             plano_id = ?,
+             status = ?
          WHERE id = ?`,
-        [nome, email, telefone, plano, status, id],
+        [nome, email, telefone, plano_id, status, id],
         (err, result) => {
             if (err) {
-                console.error(err);
+                console.error('Erro ao atualizar aluno:', err);
                 return res.status(500).json(err);
             }
 
@@ -177,7 +181,19 @@ app.put('/api/planos/:id', (req, res) => {
 });
 
 app.get('/api/pagamentos', (req, res) => {
-    db.query('SELECT * FROM pagamentos', (err, results) => {
+    db.query(`
+        SELECT
+            pagamentos.id,
+            alunos.nome AS aluno,
+            pagamentos.valor,
+            pagamentos.data_pagamento,
+            pagamentos.status,
+            pagamentos.aluno AS aluno_id
+        FROM pagamentos
+        INNER JOIN alunos
+        ON pagamentos.aluno = alunos.id
+        ORDER BY pagamentos.id DESC
+    `, (err, results) => {
         if (err) return res.status(500).json(err);
         res.json(results);
     });
@@ -196,6 +212,47 @@ app.post('/api/pagamentos', (req, res) => {
     );
 });
 
+app.put("/api/pagamentos/:id", (req, res) => {
+    const id = req.params.id;
+
+    const {
+        aluno,
+        valor,
+        data_pagamento,
+        status
+    } = req.body;
+
+    const sql = `
+        UPDATE pagamentos
+        SET aluno = ?,
+            valor = ?,
+            data_pagamento = ?,
+            status = ?
+        WHERE id = ?
+    `;
+
+    db.query(
+        sql,
+        [aluno, valor, data_pagamento, status, id],
+        (err, result) => {
+            if (err) {
+                console.error("Erro ao atualizar pagamento:", err);
+                return res.status(500).json(err);
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    mensagem: "Pagamento não encontrado"
+                });
+            }
+
+            res.json({
+                mensagem: "Pagamento atualizado com sucesso"
+            });
+        }
+    );
+});
+
 app.delete('/api/pagamentos/:id', (req, res) => {
     const id = req.params.id;
 
@@ -210,21 +267,95 @@ app.delete('/api/pagamentos/:id', (req, res) => {
 });
 
 app.get('/api/treinos', (req, res) => {
-    db.query('SELECT * FROM treinos', (err, results) => {
-        if (err) return res.status(500).json(err);
+    const sql = `
+        SELECT
+            treinos.*,
+            alunos.nome AS aluno
+        FROM treinos
+        LEFT JOIN alunos
+            ON treinos.aluno_id = alunos.id
+    `;
+
+    db.query(sql, (err, results) => {
+        if (err) {
+            console.error('Erro ao listar treinos:', err);
+            return res.status(500).json(err);
+        }
+
         res.json(results);
     });
 });
 
 app.post('/api/treinos', (req, res) => {
-    const { nome, grupo_muscular, duracao, descricao } = req.body;
+    const {
+        aluno_id,
+        nome,
+        grupo_muscular,
+        duracao,
+        descricao
+    } = req.body;
+
+    const sql = `
+        INSERT INTO treinos
+        (aluno_id, nome, grupo_muscular, duracao, descricao)
+        VALUES (?, ?, ?, ?, ?)
+    `;
 
     db.query(
-        'INSERT INTO treinos (nome, grupo_muscular, duracao, descricao) VALUES (?, ?, ?, ?)',
-        [nome, grupo_muscular, duracao, descricao],
+        sql,
+        [aluno_id, nome, grupo_muscular, duracao, descricao],
         (err, result) => {
-            if (err) return res.status(500).json(err);
-            res.json({ mensagem: 'Treino cadastrado com sucesso' });
+            if (err) {
+                console.error('Erro ao cadastrar treino:', err);
+                return res.status(500).json(err);
+            }
+
+            res.json({
+                mensagem: 'Treino cadastrado com sucesso'
+            });
+        }
+    );
+});
+
+app.put('/api/treinos/:id', (req, res) => {
+    const id = req.params.id;
+
+    const {
+        aluno_id,
+        nome,
+        grupo_muscular,
+        duracao,
+        descricao
+    } = req.body;
+
+    const sql = `
+        UPDATE treinos
+        SET aluno_id = ?,
+            nome = ?,
+            grupo_muscular = ?,
+            duracao = ?,
+            descricao = ?
+        WHERE id = ?
+    `;
+
+    db.query(
+        sql,
+        [aluno_id, nome, grupo_muscular, duracao, descricao, id],
+        (err, result) => {
+            if (err) {
+                console.error('Erro ao atualizar treino:', err);
+                return res.status(500).json(err);
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    mensagem: 'Treino não encontrado'
+                });
+            }
+
+            res.json({
+                mensagem: 'Treino atualizado com sucesso'
+            });
         }
     );
 });

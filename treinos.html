@@ -27,6 +27,12 @@
       <article class="panel form-panel">
         <h2>Novo treino</h2>
         <form id="formTreino">
+
+          <label>Aluno</label>
+          <select id="alunoTreino" required>
+            <option value="">Selecione um aluno</option>
+          </select>
+
           <label>Nome do treino</label>
           <input id="nomeTreino" type="text" placeholder="Treino A - Hipertrofia" required />
           <label>Grupo muscular</label>
@@ -43,7 +49,17 @@
         <h2>Treinos cadastrados</h2>
         <div class="table-wrapper">
           <table>
-            <thead><tr><th>Treino</th><th>Grupo</th><th>Duração</th><th>Ações</th></tr></thead>
+            <thead>
+            
+    <tr>
+        <th>Aluno</th>
+        <th>Treino</th>
+        <th>Grupo</th>
+        <th>Duração</th>
+        <th>Descrição</th>
+        <th>Ações</th>
+    </tr>
+</thead>
             <tbody id="tabelaTreinos"></tbody>
           </table>
         </div>
