@@ -130,5 +130,68 @@ tabela.addEventListener("click", async (evento) => {
     }
 });
 
+async function abrirPagamentoDaBusca() {
+    const parametros = new URLSearchParams(window.location.search);
+    const idRecebido = Number(parametros.get("id"));
+
+    if (!idRecebido) {
+        return;
+    }
+
+    try {
+        await carregarAlunos();
+
+        const resposta = await fetch(
+            "http://localhost:3000/api/pagamentos"
+        );
+
+        if (!resposta.ok) {
+            throw new Error("Não foi possível carregar os pagamentos.");
+        }
+
+        const pagamentos = await resposta.json();
+
+        const pagamento = pagamentos.find(
+            (item) => Number(item.id) === idRecebido
+        );
+
+        if (!pagamento) {
+            mostrarToast("Pagamento não encontrado.", "error");
+            return;
+        }
+
+        pagamentoEditando = pagamento.id;
+
+        alunoPagamento.value =
+            pagamento.aluno_id || pagamento.aluno || "";
+
+        valorPagamento.value = pagamento.valor || "";
+
+        dataPagamento.value = pagamento.data_pagamento
+            ? pagamento.data_pagamento.split("T")[0]
+            : "";
+
+        statusPagamento.value = pagamento.status || "Pago";
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        mostrarToast(
+            "Pagamento carregado para edição.",
+            "success"
+        );
+    } catch (erro) {
+        console.error("Erro ao carregar pagamento:", erro);
+
+        mostrarToast(
+            "Erro ao carregar os dados do pagamento.",
+            "error"
+        );
+    }
+}
+
 carregarAlunos();
 carregarPagamentos();
+abrirPagamentoDaBusca();

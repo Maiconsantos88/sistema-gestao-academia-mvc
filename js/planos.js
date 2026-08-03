@@ -97,4 +97,57 @@ tabela.addEventListener("click", async (evento) => {
     }
 });
 
+async function abrirPlanoDaBusca() {
+    const parametros = new URLSearchParams(window.location.search);
+    const idRecebido = Number(parametros.get("id"));
+
+    if (!idRecebido) {
+        return;
+    }
+
+    try {
+        const resposta = await fetch(
+            "http://localhost:3000/api/planos"
+        );
+
+        if (!resposta.ok) {
+            throw new Error("Não foi possível carregar os planos.");
+        }
+
+        const planos = await resposta.json();
+
+        const plano = planos.find(
+            (item) => Number(item.id) === idRecebido
+        );
+
+        if (!plano) {
+            mostrarToast("Plano não encontrado.", "error");
+            return;
+        }
+
+        planoId.value = plano.id;
+        nomePlano.value = plano.nome || "";
+        valorPlano.value = plano.valor || "";
+        duracaoPlano.value = plano.duracao || "";
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        mostrarToast(
+            "Plano carregado para edição.",
+            "success"
+        );
+    } catch (erro) {
+        console.error("Erro ao carregar plano:", erro);
+
+        mostrarToast(
+            "Erro ao carregar os dados do plano.",
+            "error"
+        );
+    }
+}
+
 carregarPlanos();
+abrirPlanoDaBusca();

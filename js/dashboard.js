@@ -188,12 +188,13 @@ function normalizarTexto(texto) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
-function criarResultado(tipo, titulo, detalhe, pagina) {
+function criarResultado(tipo, titulo, detalhe, pagina, id) {
   return {
     tipo,
     titulo,
     detalhe,
-    pagina
+    pagina,
+    id
   };
 }
 
@@ -220,7 +221,8 @@ buscaGlobal.addEventListener("input", () => {
           "👤 Aluno",
           aluno.nome,
           aluno.email || aluno.plano || "",
-          "alunos.html"
+          "alunos.html",
+          aluno.id
         )
       );
     }
@@ -239,7 +241,8 @@ buscaGlobal.addEventListener("input", () => {
           plano.valor
             ? formatarMoeda(plano.valor)
             : "",
-          "planos.html"
+          "planos.html",
+          plano.id
         )
       );
     }
@@ -255,8 +258,9 @@ buscaGlobal.addEventListener("input", () => {
         criarResultado(
           "🏋️ Treino",
           treino.nome,
-          treino.aluno || treino.grupo_muscular || "",
-          "treinos.html"
+          treino.aluno,
+          "treinos.html",
+          treino.id
         )
       );
     }
@@ -273,7 +277,8 @@ buscaGlobal.addEventListener("input", () => {
           "💳 Pagamento",
           pagamento.aluno,
           `${formatarMoeda(pagamento.valor)} • ${pagamento.status}`,
-          "pagamentos.html"
+          "pagamentos.html",
+          pagamento.id
         )
       );
     }
@@ -300,7 +305,11 @@ buscaGlobal.addEventListener("input", () => {
 `;
 
       item.addEventListener("click", () => {
-        window.location.href = resultado.pagina;
+        const destino = resultado.id
+          ? `${resultado.pagina}?id=${resultado.id}`
+          : resultado.pagina;
+
+        window.location.href = destino;
       });
 
       resultadoBusca.appendChild(item);

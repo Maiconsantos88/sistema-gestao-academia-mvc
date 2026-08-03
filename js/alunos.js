@@ -271,3 +271,62 @@ tabela.addEventListener("click", (evento) => {
         }
     }
 });
+
+async function abrirAlunoDaBusca() {
+    const parametros = new URLSearchParams(window.location.search);
+    const idRecebido = Number(parametros.get("id"));
+
+    if (!idRecebido) {
+        return;
+    }
+
+    try {
+        await carregarPlanos();
+
+        const resposta = await fetch(
+            "http://localhost:3000/api/alunos"
+        );
+
+        const alunos = await resposta.json();
+
+        const aluno = alunos.find(
+            (item) => Number(item.id) === idRecebido
+        );
+
+        if (!aluno) {
+            mostrarToast("Aluno não encontrado.", "error");
+            return;
+        }
+
+        alunoId.value = aluno.id;
+        nome.value = aluno.nome || "";
+        email.value = aluno.email || "";
+        telefone.value = aluno.telefone || "";
+        plano.value = aluno.plano_id || "";
+
+        dataInicio.value = aluno.data_inicio
+            ? aluno.data_inicio.split("T")[0]
+            : "";
+
+        statusAluno.value = aluno.status || "Ativo";
+        observacoes.value = aluno.observacoes || "";
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        mostrarToast(
+            "Aluno carregado para edição.",
+            "success"
+        );
+    } catch (erro) {
+        console.error("Erro ao carregar aluno:", erro);
+
+        mostrarToast(
+            "Erro ao carregar os dados do aluno.",
+            "error"
+        );
+    }
+}
+abrirAlunoDaBusca();

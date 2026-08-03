@@ -135,5 +135,53 @@ tabela.addEventListener("click", async (evento) => {
     }
 });
 
+async function abrirTreinoDaBusca() {
+    const parametros = new URLSearchParams(window.location.search);
+    const idRecebido = Number(parametros.get("id"));
+
+    if (!idRecebido) return;
+
+    try {
+        await carregarAlunos();
+
+        const resposta = await fetch("http://localhost:3000/api/treinos");
+
+        if (!resposta.ok) {
+            throw new Error("Erro ao buscar treinos.");
+        }
+
+        const treinos = await resposta.json();
+
+        const treino = treinos.find(
+            (item) => Number(item.id) === idRecebido
+        );
+
+        if (!treino) {
+            mostrarToast("Treino não encontrado.", "error");
+            return;
+        }
+
+        treinoEditando = treino.id;
+
+        alunoTreino.value = treino.aluno_id;
+        nomeTreino.value = treino.nome;
+        grupoTreino.value = treino.grupo_muscular;
+        duracaoTreino.value = treino.duracao;
+        descricaoTreino.value = treino.descricao || "";
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        mostrarToast("Treino carregado para edição.", "success");
+
+    } catch (erro) {
+        console.error(erro);
+        mostrarToast("Erro ao carregar treino.", "error");
+    }
+}
+
 carregarAlunos();
 carregarTreinos();
+abrirTreinoDaBusca();
