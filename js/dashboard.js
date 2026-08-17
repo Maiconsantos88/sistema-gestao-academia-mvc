@@ -8,6 +8,54 @@ let planosBusca = [];
 let treinosBusca = [];
 let pagamentosBusca = [];
 
+function carregarPerfilAdministrador() {
+
+const usuarioLogado = JSON.parse(
+  localStorage.getItem("usuarioLogado")
+);
+
+if (!usuarioLogado) return;
+
+const nome = usuarioLogado.nome || "Administrador";
+const email = usuarioLogado.email || "admin@academia.com";
+
+const nomeUsuarioTopo =
+  document.getElementById("nomeUsuarioTopo");
+
+const avatarUsuarioTopo =
+  document.getElementById("avatarUsuarioTopo");
+
+const nomeUsuarioBoasVindas =
+  document.getElementById("nomeUsuarioBoasVindas");
+
+const nomeUsuarioSidebar =
+  document.getElementById("nomeUsuarioSidebar");
+
+const emailUsuarioSidebar =
+  document.getElementById("emailUsuarioSidebar");
+
+if (nomeUsuarioTopo) {
+  nomeUsuarioTopo.textContent = nome;
+}
+
+if (avatarUsuarioTopo) {
+  avatarUsuarioTopo.textContent =
+    nome.charAt(0).toUpperCase();
+}
+
+if (nomeUsuarioBoasVindas) {
+  nomeUsuarioBoasVindas.textContent = nome;
+}
+
+if (nomeUsuarioSidebar) {
+  nomeUsuarioSidebar.textContent = nome;
+}
+
+if (emailUsuarioSidebar) {
+  emailUsuarioSidebar.textContent = email;
+}
+}
+
 async function carregarDashboard() {
   try {
     const [
@@ -89,10 +137,18 @@ const menuConfiguracoes = document.getElementById("menuConfiguracoes");
 
 const btnSairTopo = document.getElementById("btnSairTopo");
 const btnPerfilTopo = document.getElementById("btnPerfilTopo");
+const btnPerfil = document.getElementById("btnPerfil");
 
-btnPerfilTopo.addEventListener("click", () => {
+btnPerfilTopo.addEventListener("click", (evento) => {
+  evento.stopPropagation();
+
   menuConfiguracoes.classList.toggle("hidden");
   painelNotificacoes.classList.add("hidden");
+});
+
+btnPerfil.addEventListener("click", (evento) => {
+  evento.stopPropagation();
+  window.location.href = "perfil.html";
 });
 
 btnNotificacoes.addEventListener("click", () => {
@@ -111,7 +167,10 @@ btnSairTopo.addEventListener("click", () => {
 });
 
 document.addEventListener("click", (evento) => {
-  if (!evento.target.closest(".menu-topo")) {
+  if (
+    !evento.target.closest(".menu-topo") &&
+    !evento.target.closest(".perfil-topo")
+  ) {
     painelNotificacoes.classList.add("hidden");
     menuConfiguracoes.classList.add("hidden");
   }
@@ -327,3 +386,5 @@ document.addEventListener("click", (evento) => {
     resultadoBusca.classList.add("hidden");
   }
 });
+
+carregarPerfilAdministrador();

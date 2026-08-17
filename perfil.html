@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Meu Perfil - Fitness Academia</title>
+
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+
+  <body>
+    <aside class="sidebar">
+      <div class="logo">
+        <div class="logo-icon">🏋️</div>
+        <h2>FITNESS <span>ACADEMIA</span></h2>
+      </div>
+
+      <nav class="menu">
+        <p>NAVEGAÇÃO</p>
+
+        <a href="dashboard.html">🏠 Dashboard</a>
+        <a href="alunos.html">👥 Alunos</a>
+        <a href="planos.html">📋 Planos</a>
+        <a href="pagamentos.html">💳 Pagamentos</a>
+        <a href="treinos.html">🏋️ Treinos</a>
+      </nav>
+
+      <button id="btnSair" class="btn-logout">↪ Sair</button>
+    </aside>
+
+    <main class="main-content">
+      <header class="page-header">
+        <h1>Meu Perfil</h1>
+      </header>
+
+      <section class="perfil-page">
+        <div class="perfil-card">
+          <div class="perfil-foto-area">
+            <div class="perfil-avatar-grande" id="avatarPerfilGrande">A</div>
+
+            <div>
+              <h2 id="nomePerfilTopo">Administrador</h2>
+              <p id="cargoPerfilTopo">Administrador do sistema</p>
+            </div>
+          </div>
+
+          <form id="formPerfil">
+            <div class="perfil-grid">
+              <div class="form-group">
+                <label for="perfilNome"> Nome </label>
+
+                <input id="perfilNome" type="text" value="Administrador" />
+              </div>
+
+              <div class="form-group">
+                <label for="perfilEmail"> E-mail </label>
+
+                <input
+                  id="perfilEmail"
+                  type="email"
+                  value="admin@academia.com"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="perfilCargo"> Cargo </label>
+
+                <input id="perfilCargo" type="text" value="Administrador" />
+              </div>
+            </div>
+
+            <div class="perfil-secao">
+              <h3>🔒 Segurança</h3>
+
+              <div class="form-group">
+                <label for="senhaAtual"> Senha atual </label>
+
+                <input
+                  id="senhaAtual"
+                  type="password"
+                  placeholder="Digite sua senha atual"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="novaSenha"> Nova senha </label>
+
+                <input
+                  id="novaSenha"
+                  type="password"
+                  placeholder="Digite a nova senha"
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="confirmarSenha"> Confirmar nova senha </label>
+
+                <input
+                  id="confirmarSenha"
+                  type="password"
+                  placeholder="Digite novamente"
+                />
+              </div>
+            </div>
+
+            <div class="perfil-secao">
+              <h3>🔐 Autenticação em dois fatores</h3>
+
+              <div class="dois-fatores">
+                <div>
+                  <strong>Autenticação em dois fatores</strong>
+                  <p>Adicione uma camada extra de segurança à sua conta.</p>
+                </div>
+
+                <label class="switch">
+                  <input id="doisFatores" type="checkbox" />
+
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="perfil-acoes">
+              <button
+                type="button"
+                class="btn-secondary"
+                onclick="window.location.href = 'dashboard.html'"
+              >
+                Cancelar
+              </button>
+
+              <button type="submit" class="btn-primary">
+                Salvar alterações
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast"></div>
+
+    <script type="module" src="js/perfil.js"></script>
+  </body>
+</html>

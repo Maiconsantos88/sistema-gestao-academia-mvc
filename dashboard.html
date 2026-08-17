@@ -74,9 +74,9 @@
       </nav>
 
       <div class="sidebar-user">
-        <strong>Administrador</strong>
-        <span>admin@academia.com</span>
-        <small>● Online</small>
+        <strong id="nomeUsuarioSidebar">Administrador</strong>
+        <small id="emailUsuarioSidebar">admin@academia.com</small>
+        <small>• Online</small>
       </div>
 
       <button id="btnSair" class="btn-logout">↪ Sair</button>
@@ -139,15 +139,18 @@
             type="button"
             title="Perfil"
           >
-            <span class="perfil-avatar">A</span>
-            <span class="perfil-nome">Administrador</span>
+            <span class="perfil-avatar" id="avatarUsuarioTopo">A</span>
+            <span class="perfil-nome" id="nomeUsuarioTopo">Administrador</span>
           </button>
         </div>
       </header>
 
       <section class="welcome">
         <div>
-          <h1>Bem-vindo de volta, Administrador! 💪</h1>
+          <h1>
+            Bem-vindo de volta,
+            <span id="nomeUsuarioBoasVindas">Administrador</span>! 💪
+          </h1>
           <p>Aqui está o resumo da sua academia hoje.</p>
         </div>
         <a href="alunos.html" class="btn-primary">+ Novo Aluno</a>

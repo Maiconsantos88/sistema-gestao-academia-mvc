@@ -3,6 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
+const bcrypt = require("bcrypt");
 
 const app = express();
 
@@ -371,6 +372,113 @@ app.delete('/api/treinos/:id', (req, res) => {
             res.json({ mensagem: 'Treino excluído com sucesso' });
         }
     );
+});
+
+app.post("/api/usuarios/inicializar", async (req, res) => {
+    try {
+        const senhaHash = await bcrypt.hash("123456", 10);
+
+        const sql = `
+            INSERT INTO usuarios
+            (nome, email, senha, cargo, dois_fatores)
+            VALUES (?, ?, ?, ?, ?)
+        `;
+
+        db.query(
+            sql,
+            [
+                "Administrador",
+                "admin@academia.com",
+                senhaHash,
+                "Administrador",
+                false
+            ],
+            (err) => {
+                if (err) {
+                    console.error("Erro ao criar usuário:", err);
+
+                    return res.status(500).json({
+                        erro: "Erro ao criar usuário"
+                    });
+                }
+
+                res.json({
+                    mensagem: "Administrador criado com sucesso"
+                });
+            }
+        );
+    } catch (erro) {
+        console.error("Erro interno:", erro);
+
+        res.status(500).json({
+            erro: "Erro interno do servidor"
+        });
+    }
+});
+
+app.post("/api/login", (req, res) => {
+    const { email, senha } = req.body;
+
+    if (!email || !senha) {
+        return res.status(400).json({
+            erro: "E-mail e senha são obrigatórios"
+        });
+    }
+
+    const sql = `
+        SELECT id, nome, email, senha, cargo, dois_fatores
+        FROM usuarios
+        WHERE email = ?
+        LIMIT 1
+    `;
+
+    db.query(sql, [email], async (err, results) => {
+        if (err) {
+            console.error("Erro ao buscar usuário:", err);
+
+            return res.status(500).json({
+                erro: "Erro interno do servidor"
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(401).json({
+                erro: "E-mail ou senha inválidos"
+            });
+        }
+
+        const usuario = results[0];
+
+        try {
+            const senhaCorreta = await bcrypt.compare(
+                senha,
+                usuario.senha
+            );
+
+            if (!senhaCorreta) {
+                return res.status(401).json({
+                    erro: "E-mail ou senha inválidos"
+                });
+            }
+
+            return res.json({
+                mensagem: "Login realizado com sucesso",
+                usuario: {
+                    id: usuario.id,
+                    nome: usuario.nome,
+                    email: usuario.email,
+                    cargo: usuario.cargo,
+                    doisFatores: Boolean(usuario.dois_fatores)
+                }
+            });
+        } catch (erro) {
+            console.error("Erro ao comparar senha:", erro);
+
+            return res.status(500).json({
+                erro: "Erro interno do servidor"
+            });
+        }
+    });
 });
 
 app.listen(3000, () => {
