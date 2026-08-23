@@ -19,25 +19,65 @@ const cargoPerfilTopo = document.getElementById("cargoPerfilTopo");
 const avatarPerfilGrande = document.getElementById("avatarPerfilGrande");
 
 // Carrega os dados salvos
-function carregarPerfil() {
-    const perfilSalvo = JSON.parse(localStorage.getItem("perfilAdmin"));
+async function carregarPerfil() {
+    const usuarioLogado = JSON.parse(
+        localStorage.getItem("usuarioLogado")
+    );
 
-    if (perfilSalvo) {
-        perfilNome.value = perfilSalvo.nome || "Administrador";
-        perfilEmail.value = perfilSalvo.email || "admin@academia.com";
-        perfilCargo.value = perfilSalvo.cargo || "Administrador";
-        doisFatores.checked = perfilSalvo.doisFatores || false;
-        nomePerfilTopo.textContent = perfilSalvo.nome || "Administrador";
-        cargoPerfilTopo.textContent = perfilSalvo.cargo || "Administrador do sistema";
-        const nome = perfilSalvo.nome || "Administrador";
+    if (!usuarioLogado) {
+        mostrarToast("Usuário não encontrado.", "error");
+        return;
+    }
+
+    try {
+        const resposta = await fetch(
+            `http://localhost:3000/api/usuarios/${usuarioLogado.id}/perfil`
+        );
+
+        const dados = await resposta.json();
+
+        if (!resposta.ok) {
+            mostrarToast(
+                dados.erro || "Erro ao carregar perfil.",
+                "error"
+            );
+            return;
+        }
+
+        perfilNome.value = dados.nome || "";
+        perfilEmail.value = dados.email || "";
+        perfilCargo.value = dados.cargo || "";
+        doisFatores.checked = dados.doisFatores || false;
+
+        nomePerfilTopo.textContent = dados.nome || "Administrador";
+        cargoPerfilTopo.textContent = dados.cargo || "Administrador";
 
         avatarPerfilGrande.textContent =
-            nome.charAt(0).toUpperCase();
+            (dados.nome || "Administrador")
+                .charAt(0)
+                .toUpperCase();
+
+    } catch (erro) {
+        console.error("Erro ao carregar perfil:", erro);
+
+        mostrarToast(
+            "Não foi possível conectar ao servidor.",
+            "error"
+        );
     }
 }
 
-formPerfil.addEventListener("submit", (evento) => {
+formPerfil.addEventListener("submit", async (evento) => {
     evento.preventDefault();
+
+    const usuarioLogado = JSON.parse(
+        localStorage.getItem("usuarioLogado")
+    );
+
+    if (!usuarioLogado) {
+        mostrarToast("Usuário não encontrado.", "error");
+        return;
+    }
 
     if (!perfilNome.value.trim()) {
         mostrarToast("Informe o nome.", "error");
@@ -49,26 +89,22 @@ formPerfil.addEventListener("submit", (evento) => {
         return;
     }
 
-    // Validação da nova senha
-    if (novaSenha.value || confirmarSenha.value) {
+    if (!perfilCargo.value.trim()) {
+        mostrarToast("Informe o cargo.", "error");
+        return;
+    }
 
-        if (!senhaAtual.value) {
-            mostrarToast("Informe a senha atual.", "error");
-            return;
-        }
-
-        if (novaSenha.value.length < 6) {
-            mostrarToast(
-                "A nova senha deve ter pelo menos 6 caracteres.",
-                "error"
-            );
-            return;
-        }
-
-        if (novaSenha.value !== confirmarSenha.value) {
-            mostrarToast("As novas senhas não coincidem.", "error");
-            return;
-        }
+    // A troca de senha será feita em uma rota própria
+    if (
+        senhaAtual.value ||
+        novaSenha.value ||
+        confirmarSenha.value
+    ) {
+        mostrarToast(
+            "A alteração de senha será configurada na próxima etapa.",
+            "error"
+        );
+        return;
     }
 
     const perfil = {
@@ -78,25 +114,61 @@ formPerfil.addEventListener("submit", (evento) => {
         doisFatores: doisFatores.checked
     };
 
-    localStorage.setItem(
-        "perfilAdmin",
-        JSON.stringify(perfil)
-    );
+    try {
+        const resposta = await fetch(
+            `http://localhost:3000/api/usuarios/${usuarioLogado.id}/perfil`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(perfil)
+            }
+        );
 
-    nomePerfilTopo.textContent = perfil.nome;
-    cargoPerfilTopo.textContent = perfil.cargo;
+        const dados = await resposta.json();
 
-    avatarPerfilGrande.textContent =
-        perfil.nome.charAt(0).toUpperCase();
+        if (!resposta.ok) {
+            mostrarToast(
+                dados.erro || "Erro ao atualizar perfil.",
+                "error"
+            );
+            return;
+        }
 
-    mostrarToast(
-        "Perfil atualizado com sucesso!",
-        "success"
-    );
+        // Atualiza também os dados da sessão atual
+        const usuarioAtualizado = {
+            ...usuarioLogado,
+            nome: perfil.nome,
+            email: perfil.email,
+            cargo: perfil.cargo,
+            doisFatores: perfil.doisFatores
+        };
 
-    senhaAtual.value = "";
-    novaSenha.value = "";
-    confirmarSenha.value = "";
+        localStorage.setItem(
+            "usuarioLogado",
+            JSON.stringify(usuarioAtualizado)
+        );
+
+        nomePerfilTopo.textContent = perfil.nome;
+        cargoPerfilTopo.textContent = perfil.cargo;
+
+        avatarPerfilGrande.textContent =
+            perfil.nome.charAt(0).toUpperCase();
+
+        mostrarToast(
+            "Perfil atualizado com sucesso!",
+            "success"
+        );
+
+    } catch (erro) {
+        console.error("Erro ao atualizar perfil:", erro);
+
+        mostrarToast(
+            "Não foi possível conectar ao servidor.",
+            "error"
+        );
+    }
 });
 
 carregarPerfil();

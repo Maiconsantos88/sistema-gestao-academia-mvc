@@ -4,6 +4,7 @@ const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 const bcrypt = require("bcrypt");
+const speakeasy = require('speakeasy');
 
 const app = express();
 
@@ -461,8 +462,17 @@ app.post("/api/login", (req, res) => {
                 });
             }
 
+            if (Boolean(usuario.dois_fatores)) {
+                return res.json({
+                    mensagem: "Autenticação em dois fatores necessária",
+                    requer2FA: true,
+                    usuarioId: usuario.id
+                });
+            }
+
             return res.json({
                 mensagem: "Login realizado com sucesso",
+                requer2FA: Boolean(usuario.dois_fatores),
                 usuario: {
                     id: usuario.id,
                     nome: usuario.nome,
@@ -478,6 +488,304 @@ app.post("/api/login", (req, res) => {
                 erro: "Erro interno do servidor"
             });
         }
+    });
+});
+
+// Buscar perfil do usuário
+app.get("/api/usuarios/:id/perfil", (req, res) => {
+    const id = req.params.id;
+
+    const sql = `
+        SELECT id, nome, email, cargo, dois_fatores
+        FROM usuarios
+        WHERE id = ?
+        LIMIT 1
+    `;
+
+    db.query(sql, [id], (err, results) => {
+        if (err) {
+            console.error("Erro ao buscar perfil:", err);
+
+            return res.status(500).json({
+                erro: "Erro interno do servidor"
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({
+                erro: "Usuário não encontrado"
+            });
+        }
+
+        const usuario = results[0];
+
+        res.json({
+            id: usuario.id,
+            nome: usuario.nome,
+            email: usuario.email,
+            cargo: usuario.cargo,
+            doisFatores: Boolean(usuario.dois_fatores)
+        });
+    });
+});
+
+// Atualizar perfil do usuário
+app.put("/api/usuarios/:id/perfil", (req, res) => {
+    const id = req.params.id;
+    const { nome, email, cargo, doisFatores } = req.body;
+
+    if (!nome || !email || !cargo) {
+        return res.status(400).json({
+            erro: "Nome, e-mail e cargo são obrigatórios"
+        });
+    }
+
+    const sql = `
+    UPDATE usuarios
+    SET nome = ?,
+        email = ?,
+        cargo = ?,
+        dois_fatores = ?,
+        segredo_2fa = CASE
+            WHEN ? = false THEN NULL
+            ELSE segredo_2fa
+        END
+    WHERE id = ?
+`;
+
+    db.query(
+        sql,
+        [
+            nome,
+            email,
+            cargo,
+            Boolean(doisFatores),
+            Boolean(doisFatores),
+            id
+        ],
+        (err, result) => {
+            if (err) {
+                console.error("Erro ao atualizar perfil:", err);
+
+                return res.status(500).json({
+                    erro: "Erro ao atualizar perfil"
+                });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    erro: "Usuário não encontrado"
+                });
+            }
+
+            res.json({
+                mensagem: "Perfil atualizado com sucesso"
+            });
+        }
+    );
+});
+
+// Alterar senha do usuário
+app.put("/api/usuarios/:id/senha", (req, res) => {
+    const id = req.params.id;
+    const { senhaAtual, novaSenha } = req.body;
+
+    if (!senhaAtual || !novaSenha) {
+        return res.status(400).json({
+            erro: "Senha atual e nova senha são obrigatórias"
+        });
+    }
+
+    if (novaSenha.length < 6) {
+        return res.status(400).json({
+            erro: "A nova senha deve ter pelo menos 6 caracteres"
+        });
+    }
+
+    const sqlBuscar = `
+        SELECT senha
+        FROM usuarios
+        WHERE id = ?
+        LIMIT 1
+    `;
+
+    db.query(sqlBuscar, [id], async (err, results) => {
+        if (err) {
+            console.error("Erro ao buscar usuário:", err);
+
+            return res.status(500).json({
+                erro: "Erro interno do servidor"
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({
+                erro: "Usuário não encontrado"
+            });
+        }
+
+        try {
+            const senhaCorreta = await bcrypt.compare(
+                senhaAtual,
+                results[0].senha
+            );
+
+            if (!senhaCorreta) {
+                return res.status(401).json({
+                    erro: "Senha atual incorreta"
+                });
+            }
+
+            const novaSenhaHash = await bcrypt.hash(
+                novaSenha,
+                10
+            );
+
+            const sqlAtualizar = `
+                UPDATE usuarios
+                SET senha = ?
+                WHERE id = ?
+            `;
+
+            db.query(
+                sqlAtualizar,
+                [novaSenhaHash, id],
+                (err, result) => {
+                    if (err) {
+                        console.error(
+                            "Erro ao alterar senha:",
+                            err
+                        );
+
+                        return res.status(500).json({
+                            erro: "Erro ao alterar senha"
+                        });
+                    }
+
+                    res.json({
+                        mensagem: "Senha alterada com sucesso"
+                    });
+                }
+            );
+
+        } catch (erro) {
+            console.error(
+                "Erro ao processar senha:",
+                erro
+            );
+
+            res.status(500).json({
+                erro: "Erro interno do servidor"
+            });
+        }
+    });
+});
+
+// Gerar e salvar segredo para autenticação em dois fatores
+app.post("/api/usuarios/:id/2fa/gerar", (req, res) => {
+    const id = req.params.id;
+
+    const segredo = speakeasy.generateSecret({
+        name: `Fitness Academia (${id})`
+    });
+
+    const sql = `
+        UPDATE usuarios
+        SET segredo_2fa = ?
+        WHERE id = ?
+    `;
+
+    db.query(
+        sql,
+        [segredo.base32, id],
+        (err, result) => {
+            if (err) {
+                console.error("Erro ao salvar segredo 2FA:", err);
+
+                return res.status(500).json({
+                    erro: "Erro ao salvar segredo 2FA"
+                });
+            }
+
+            if (result.affectedRows === 0) {
+                return res.status(404).json({
+                    erro: "Usuário não encontrado"
+                });
+            }
+
+            res.json({
+                mensagem: "Segredo 2FA gerado e salvo com sucesso",
+                segredoBase32: segredo.base32,
+                otpauthUrl: segredo.otpauth_url
+            });
+        }
+    );
+});
+
+// Verificar código da autenticação em dois fatores
+app.post("/api/usuarios/:id/2fa/verificar", (req, res) => {
+    const id = req.params.id;
+    const { codigo } = req.body;
+
+    if (!codigo) {
+        return res.status(400).json({
+            erro: "Código 2FA é obrigatório"
+        });
+    }
+
+    const sql = `
+        SELECT id, nome, email, cargo, segredo_2fa
+        FROM usuarios
+        WHERE id = ?
+        LIMIT 1
+    `;
+
+    db.query(sql, [id], (err, results) => {
+        if (err) {
+            console.error("Erro ao buscar segredo 2FA:", err);
+
+            return res.status(500).json({
+                erro: "Erro interno do servidor"
+            });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({
+                erro: "Usuário não encontrado"
+            });
+        }
+
+        const usuario = results[0];
+
+        if (!usuario.segredo_2fa) {
+            return res.status(400).json({
+                erro: "2FA não configurado para este usuário"
+            });
+        }
+
+        const valido = speakeasy.totp.verify({
+            secret: usuario.segredo_2fa,
+            encoding: "base32",
+            token: codigo,
+            window: 1
+        });
+
+        if (!valido) {
+            return res.status(401).json({
+                erro: "Código 2FA inválido"
+            });
+        }
+
+        res.json({
+            mensagem: "Código 2FA validado com sucesso",
+            usuario: {
+                id: usuario.id,
+                nome: usuario.nome,
+                email: usuario.email,
+                cargo: usuario.cargo,
+                doisFatores: true
+            }
+        });
     });
 });
 
