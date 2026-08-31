@@ -50,21 +50,41 @@ app.get('/api/alunos', (req, res) => {
 });
 
 app.post('/api/alunos', (req, res) => {
-    const { nome, email, telefone, plano_id, status } = req.body;
+    const {
+        nome,
+        email,
+        telefone,
+        plano_id,
+        dataInicio,
+        status,
+        observacoes
+    } = req.body;
 
     const sql = `
-        INSERT INTO alunos (nome, email, telefone, plano_id, status)
-        VALUES (?, ?, ?, ?, ?)
-    `;
+    INSERT INTO alunos
+    (nome, email, telefone, plano_id, data_inicio, status, observacoes)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+`;
 
-    db.query(sql, [nome, email, telefone, plano_id, status], (err, result) => {
-        if (err) {
-            console.error('Erro ao cadastrar aluno:', err);
-            return res.status(500).json(err);
-        }
+    db.query(
+        sql,
+        [
+            nome,
+            email,
+            telefone,
+            plano_id,
+            dataInicio || null,
+            status,
+            observacoes || null
+        ],
+        (err, result) => {
+            if (err) {
+                console.error('Erro ao cadastrar aluno:', err);
+                return res.status(500).json(err);
+            }
 
-        res.json({ mensagem: 'Aluno cadastrado com sucesso!' });
-    });
+            res.json({ mensagem: 'Aluno cadastrado com sucesso!' });
+        });
 });
 
 app.delete('/api/alunos/:id', (req, res) => {
@@ -94,7 +114,9 @@ app.put('/api/alunos/:id', (req, res) => {
         email,
         telefone,
         plano_id,
-        status
+        dataInicio,
+        status,
+        observacoes
     } = req.body;
 
     db.query(
@@ -103,9 +125,20 @@ app.put('/api/alunos/:id', (req, res) => {
              email = ?,
              telefone = ?,
              plano_id = ?,
-             status = ?
+             data_inicio = ?,
+             status = ?,
+             observacoes = ?
          WHERE id = ?`,
-        [nome, email, telefone, plano_id, status, id],
+        [
+            nome,
+            email,
+            telefone,
+            plano_id,
+            dataInicio || null,
+            status,
+            observacoes || null,
+            id
+        ],
         (err, result) => {
             if (err) {
                 console.error('Erro ao atualizar aluno:', err);
@@ -377,7 +410,15 @@ app.delete('/api/treinos/:id', (req, res) => {
 
 app.post("/api/usuarios/inicializar", async (req, res) => {
     try {
-        const senhaHash = await bcrypt.hash("123456", 10);
+        const senhaInicial = process.env.ADMIN_PASSWORD;
+
+        if (!senhaInicial) {
+            return res.status(500).json({
+                erro: "Senha inicial do administrador não configurada"
+            });
+        }
+
+        const senhaHash = await bcrypt.hash(senhaInicial, 10);
 
         const sql = `
             INSERT INTO usuarios

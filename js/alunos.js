@@ -159,26 +159,98 @@ busca.addEventListener("input", () => {
     renderizarTabela(model.pesquisar(busca.value));
 });
 
-tabela.addEventListener("click", (evento) => {
+tabela.addEventListener("click", async (evento) => {
+    if (evento.target.classList.contains("btn-edit")) {
+        const id = Number(evento.target.dataset.id);
+
+        try {
+            const resposta = await fetch("http://localhost:3000/api/alunos");
+            const alunos = await resposta.json();
+
+            const aluno = alunos.find(
+                (item) => Number(item.id) === id
+            );
+
+            if (!aluno) {
+                mostrarToast("Aluno não encontrado.", "error");
+                return;
+            }
+
+            alunoId.value = aluno.id;
+            nome.value = aluno.nome || "";
+            email.value = aluno.email || "";
+            telefone.value = aluno.telefone || "";
+
+            plano.value = aluno.plano_id || "";
+
+            dataInicio.value = aluno.data_inicio
+                ? aluno.data_inicio.split("T")[0]
+                : "";
+
+            statusAluno.value = aluno.status || "Ativo";
+            observacoes.value = aluno.observacoes || "";
+
+            window.scrollTo({
+                top: 0,
+                behavior: "smooth"
+            });
+
+            mostrarToast(
+                "Aluno carregado para edição.",
+                "success"
+            );
+        } catch (erro) {
+            console.error("Erro ao carregar aluno:", erro);
+
+            mostrarToast(
+                "Erro ao carregar aluno.",
+                "error"
+            );
+        }
+    }
+
+    if (evento.target.classList.contains("btn-delete")) {
     const id = Number(evento.target.dataset.id);
 
-    if (evento.target.classList.contains("edit")) {
-        const aluno = model.buscarPorId(id);
-        alunoId.value = aluno.id;
-        nome.value = aluno.nome;
-        email.value = aluno.email;
-        telefone.value = aluno.telefone;
-        plano.value = aluno.plano_id;
-        dataInicio.value = aluno.dataInicio;
-        statusAluno.value = aluno.status;
-        observacoes.value = aluno.observacoes;
-        mostrarToast("Aluno carregado para edição.");
+    const confirmar = confirm("Deseja realmente excluir este aluno?");
+
+    if (!confirmar) {
+        return;
     }
 
-    if (evento.target.classList.contains("delete")) {
-        idParaExcluir = id;
-        modal.classList.remove("hidden");
+    try {
+        const resposta = await fetch(
+            `http://localhost:3000/api/alunos/${id}`,
+            {
+                method: "DELETE"
+            }
+        );
+
+        if (!resposta.ok) {
+            mostrarToast(
+                "Erro ao excluir aluno.",
+                "error"
+            );
+            return;
+        }
+
+        mostrarToast(
+            "Aluno excluído com sucesso!",
+            "success"
+        );
+
+        location.reload();
+
+    } catch (erro) {
+        console.error("Erro ao excluir aluno:", erro);
+
+        mostrarToast(
+            "Erro ao excluir aluno.",
+            "error"
+        );
     }
+}
+
 });
 
 btnNaoExcluir.addEventListener("click", () => {
@@ -226,51 +298,6 @@ fetch('http://localhost:3000/api/alunos')
     .catch(error => {
         console.error('Erro:', error);
     });
-
-window.editarAluno = function (id) {
-    alert("Editar aluno ID: " + id);
-};
-
-window.excluirAluno = function (id) {
-    alert("Excluir aluno ID: " + id);
-};
-tabela.addEventListener("click", (evento) => {
-    const id = Number(evento.target.dataset.id);
-    if (evento.target.classList.contains("btn-edit")) {
-        const linha = evento.target.closest("tr");
-        const colunas = linha.querySelectorAll("td");
-
-        alunoId.value = id;
-        nome.value = colunas[0].innerText;
-        email.value = colunas[1].innerText;
-        telefone.value = colunas[2].innerText;
-        plano.value = colunas[3].innerText;
-        statusAluno.value = colunas[4].innerText;
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-    }
-    if (evento.target.classList.contains("btn-delete")) {
-
-        if (confirm("Deseja excluir este aluno?")) {
-
-            fetch(`http://localhost:3000/api/alunos/${id}`, {
-                method: "DELETE"
-            })
-                .then(() => {
-                    alert("Aluno excluído com sucesso!");
-                    location.reload();
-                })
-                .catch(error => {
-                    console.error(error);
-                    alert("Erro ao excluir aluno.");
-                });
-
-        }
-    }
-});
 
 async function abrirAlunoDaBusca() {
     const parametros = new URLSearchParams(window.location.search);
