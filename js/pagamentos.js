@@ -36,15 +36,12 @@ async function carregarPagamentos() {
         linha.innerHTML = `
             <td>${pagamento.aluno}</td>
             <td>${formatarMoeda(pagamento.valor)}</td>
-            <td>${pagamento.data_pagamento.split("-").reverse().join("/")}</td>
-            <td>${pagamento.status}</td>
-            <td class="acoes">
-    <button class="action-btn edit" data-id="${pagamento.id}">
-        ✏️
-    </button>
-            <td>
-                <button class="action-btn delete" data-id="${pagamento.id}">🗑️</button>
-            </td>
+            <td>${pagamento.data_pagamento.substring(0, 10).split("-").reverse().join("/")}</td>
+<td>${pagamento.status}</td>
+<td class="acoes">
+    <button class="btn-edit" data-id="${pagamento.id}">🖊️</button>
+    <button class="action-btn delete" data-id="${pagamento.id}">🗑️</button>
+</td>
         `;
 
         tabela.appendChild(linha);
