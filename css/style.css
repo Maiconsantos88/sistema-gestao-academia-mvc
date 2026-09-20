@@ -1429,3 +1429,25 @@ body.dark-mode .form-group input {
     }
 }
 
+td.acoes {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+td.acoes .action-btn {
+  border: none;
+  padding: 8px 10px;
+  border-radius: 9px;
+  cursor: pointer;
+  color: #fff;
+}
+
+td.acoes .action-btn.edit {
+  background: var(--primary-2);
+}
+
+td.acoes .action-btn.delete {
+  background: var(--red);
+}
+
