@@ -26,7 +26,7 @@ const btnNaoExcluir = document.getElementById("btnNaoExcluir");
 let idParaExcluir = null;
 
 async function carregarPlanos() {
-    const resposta = await fetch("/api/planos");
+    const resposta = await fetch("https://sistema-gestao-academia-mvc.onrender.com/api/planos");
     const planos = await resposta.json();
 
     plano.innerHTML = '<option value="">Selecione um plano</option>';
