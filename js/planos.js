@@ -30,8 +30,8 @@ async function carregarPlanos() {
             <td>${formatarMoeda(plano.valor)}</td>
             <td>${plano.duracao}</td>
             <td>
-                <button class="action-btn edit" data-id="${plano.id}">✏️</button>
-                <button class="action-btn delete" data-id="${plano.id}">🗑️</button>
+                <button class="btn-edit" data-id="${plano.id}">✏️</button>
+                <button class="btn-delete" data-id="${plano.id}">🗑️</button>
             </td>
         `;
 
@@ -75,7 +75,7 @@ btnCancelar.addEventListener("click", limpar);
 tabela.addEventListener("click", async (evento) => {
     const id = evento.target.dataset.id;
 
-    if (evento.target.classList.contains("edit")) {
+    if (evento.target.classList.contains("btn-edit")) {
         const linha = evento.target.closest("tr");
         const colunas = linha.querySelectorAll("td");
 
@@ -85,7 +85,7 @@ tabela.addEventListener("click", async (evento) => {
         duracaoPlano.value = colunas[2].innerText;
     }
 
-    if (evento.target.classList.contains("delete")) {
+   if (evento.target.classList.contains("btn-delete")) {
         if (confirm("Deseja excluir este plano?")) {
             await fetch(`https://sistema-gestao-academia-mvc.onrender.com/api/planos/${id}`, {
                 method: "DELETE"

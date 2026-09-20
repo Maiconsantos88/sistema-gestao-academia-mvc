@@ -47,8 +47,8 @@ async function carregarTreinos() {
             <td>${treino.duracao}</td>
             <td title="${treino.descricao || ''}">${treino.descricao || ''}</td>
             <td class="acoes">
-    <button class="action-btn edit" data-id="${treino.id}">✏️</button>
-    <button class="action-btn delete" data-id="${treino.id}">🗑️</button>
+   <button class="btn-edit" data-id="${treino.id}">✏️</button>
+   <button class="btn-delete" data-id="${treino.id}">🗑️</button>
 </td>
         `;
 
@@ -96,7 +96,7 @@ form.addEventListener("submit", async (evento) => {
 tabela.addEventListener("click", async (evento) => {
     const id = evento.target.dataset.id;
 
-    if (evento.target.classList.contains("edit")) {
+   if (evento.target.classList.contains("btn-edit")) {
         const resposta = await fetch("https://sistema-gestao-academia-mvc.onrender.com/api/treinos");
         const treinos = await resposta.json();
 
@@ -123,7 +123,7 @@ tabela.addEventListener("click", async (evento) => {
         });
     }
 
-    if (evento.target.classList.contains("delete")) {
+   if (evento.target.classList.contains("btn-delete")) {
         if (confirm("Deseja excluir este treino?")) {
             await fetch(`https://sistema-gestao-academia-mvc.onrender.com/api/treinos/${id}`, {
                 method: "DELETE"

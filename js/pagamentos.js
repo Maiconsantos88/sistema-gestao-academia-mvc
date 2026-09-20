@@ -39,8 +39,8 @@ async function carregarPagamentos() {
             <td>${pagamento.data_pagamento.substring(0, 10).split("-").reverse().join("/")}</td>
 <td>${pagamento.status}</td>
 <td class="acoes">
-    <button class="action-btn edit" data-id="${pagamento.id}">✏️</button>
-    <button class="action-btn delete" data-id="${pagamento.id}">🗑️</button>
+    <button class="btn-edit" data-id="${pagamento.id}">✏️</button>
+    <button class="btn-delete" data-id="${pagamento.id}">🗑️</button>
 </td>
         `;
 
@@ -87,7 +87,7 @@ form.addEventListener("submit", async (evento) => {
 tabela.addEventListener("click", async (evento) => {
     const id = evento.target.dataset.id;
 
-    if (evento.target.classList.contains("edit")) {
+   if (evento.target.classList.contains("btn-edit")) {
         const resposta = await fetch("https://sistema-gestao-academia-mvc.onrender.com/api/pagamentos");
         const pagamentos = await resposta.json();
 
@@ -115,7 +115,7 @@ tabela.addEventListener("click", async (evento) => {
         return;
     }
 
-    if (evento.target.classList.contains("delete")) {
+    if (evento.target.classList.contains("btn-delete")) {
         if (confirm("Deseja excluir este pagamento?")) {
             await fetch(`https://sistema-gestao-academia-mvc.onrender.com/api/pagamentos/${id}`, {
                 method: "DELETE"
