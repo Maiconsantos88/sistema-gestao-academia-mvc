@@ -39,7 +39,7 @@ async function carregarPagamentos() {
             <td>${pagamento.data_pagamento.substring(0, 10).split("-").reverse().join("/")}</td>
 <td>${pagamento.status}</td>
 <td class="acoes">
-    <button class="btn-edit" data-id="${pagamento.id}">🖊️</button>
+    <button class="action-btn edit" data-id="${pagamento.id}">✏️</button>
     <button class="action-btn delete" data-id="${pagamento.id}">🗑️</button>
 </td>
         `;
