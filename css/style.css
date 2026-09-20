@@ -634,7 +634,8 @@ td:nth-child(5) {
   text-overflow: ellipsis;
 }
 
-.action-btn {
+.btn-edit,
+.btn-delete {
   border: none;
   padding: 8px 10px;
   border-radius: 9px;
@@ -643,11 +644,11 @@ td:nth-child(5) {
   color: #fff;
 }
 
-.edit {
+.btn-edit {
   background: var(--primary-2);
 }
 
-.delete {
+.btn-delete {
   background: var(--red);
 }
 
@@ -1428,26 +1429,3 @@ body.dark-mode .form-group input {
         width: 100%;
     }
 }
-
-td.acoes {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-td.acoes .action-btn {
-  border: none;
-  padding: 8px 10px;
-  border-radius: 9px;
-  cursor: pointer;
-  color: #fff;
-}
-
-td.acoes .action-btn.edit {
-  background: var(--primary-2);
-}
-
-td.acoes .action-btn.delete {
-  background: var(--red);
-}
-
