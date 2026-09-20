@@ -31,7 +31,7 @@ async function carregarPerfil() {
 
     try {
         const resposta = await fetch(
-            `http://localhost:3000/api/usuarios/${usuarioLogado.id}/perfil`
+            `https://sistema-gestao-academia-mvc.onrender.com/api/usuarios/${usuarioLogado.id}/perfil`
         );
 
         const dados = await resposta.json();
@@ -116,7 +116,7 @@ formPerfil.addEventListener("submit", async (evento) => {
 
     try {
         const resposta = await fetch(
-            `http://localhost:3000/api/usuarios/${usuarioLogado.id}/perfil`,
+            `https://sistema-gestao-academia-mvc.onrender.com/api/usuarios/${usuarioLogado.id}/perfil`,
             {
                 method: "PUT",
                 headers: {

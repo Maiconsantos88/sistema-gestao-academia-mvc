@@ -16,7 +16,7 @@ formLogin.addEventListener("submit", async (evento) => {
         // Se o sistema ainda não pediu 2FA, faz o login normal
         if (!usuario2FAId) {
             const resposta = await fetch(
-                "http://localhost:3000/api/login",
+                "https://sistema-gestao-academia-mvc.onrender.com/api/login",
                 {
                     method: "POST",
                     headers: {
@@ -86,7 +86,7 @@ formLogin.addEventListener("submit", async (evento) => {
         }
 
         const resposta2FA = await fetch(
-            `http://localhost:3000/api/usuarios/${usuario2FAId}/2fa/verificar`,
+            `https://sistema-gestao-academia-mvc.onrender.com/api/usuarios/${usuarioId}/2fa/verificar`,
             {
                 method: "POST",
                 headers: {

@@ -12,7 +12,7 @@ const tabela = document.getElementById("tabelaPagamentos");
 let pagamentoEditando = null;
 
 async function carregarAlunos() {
-    const resposta = await fetch("http://localhost:3000/api/alunos");
+    const resposta = await fetch("https://sistema-gestao-academia-mvc.onrender.com/api/alunos");
     const alunos = await resposta.json();
 
     alunoPagamento.innerHTML = '<option value="">Selecione um aluno</option>';
@@ -25,7 +25,7 @@ async function carregarAlunos() {
 }
 
 async function carregarPagamentos() {
-    const resposta = await fetch("http://localhost:3000/api/pagamentos");
+    const resposta = await fetch("https://sistema-gestao-academia-mvc.onrender.com/api/pagamentos");
     const pagamentos = await resposta.json();
 
     tabela.innerHTML = "";
@@ -62,8 +62,8 @@ form.addEventListener("submit", async (evento) => {
     };
 
     const url = pagamentoEditando
-        ? `http://localhost:3000/api/pagamentos/${pagamentoEditando}`
-        : "http://localhost:3000/api/pagamentos";
+        ? `https://sistema-gestao-academia-mvc.onrender.com/api/pagamentos/${pagamentoEditando}`
+        : "https://sistema-gestao-academia-mvc.onrender.com/api/pagamentos";
 
     const metodo = pagamentoEditando ? "PUT" : "POST";
 
@@ -91,7 +91,7 @@ tabela.addEventListener("click", async (evento) => {
     const id = evento.target.dataset.id;
 
     if (evento.target.classList.contains("edit")) {
-        const resposta = await fetch("http://localhost:3000/api/pagamentos");
+        const resposta = await fetch("https://sistema-gestao-academia-mvc.onrender.com/api/pagamentos");
         const pagamentos = await resposta.json();
 
         const pagamento = pagamentos.find(
@@ -120,7 +120,7 @@ tabela.addEventListener("click", async (evento) => {
 
     if (evento.target.classList.contains("delete")) {
         if (confirm("Deseja excluir este pagamento?")) {
-            await fetch(`http://localhost:3000/api/pagamentos/${id}`, {
+            await fetch(`https://sistema-gestao-academia-mvc.onrender.com/api/pagamentos/${id}`, {
                 method: "DELETE"
             });
 
@@ -142,7 +142,7 @@ async function abrirPagamentoDaBusca() {
         await carregarAlunos();
 
         const resposta = await fetch(
-            "http://localhost:3000/api/pagamentos"
+            "https://sistema-gestao-academia-mvc.onrender.com/api/pagamentos"
         );
 
         if (!resposta.ok) {

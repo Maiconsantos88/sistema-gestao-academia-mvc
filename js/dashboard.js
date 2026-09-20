@@ -64,10 +64,10 @@ async function carregarDashboard() {
       respostaTreinos,
       respostaPagamentos
     ] = await Promise.all([
-      fetch("http://localhost:3000/api/alunos"),
-      fetch("http://localhost:3000/api/planos"),
-      fetch("http://localhost:3000/api/treinos"),
-      fetch("http://localhost:3000/api/pagamentos")
+      fetch("https://sistema-gestao-academia-mvc.onrender.com/api/alunos"),
+      fetch("https://sistema-gestao-academia-mvc.onrender.com/api/planos"),
+      fetch("https://sistema-gestao-academia-mvc.onrender.com/api/treinos"),
+      fetch("https://sistema-gestao-academia-mvc.onrender.com/api/pagamentos")
     ]);
 
     const alunos = await respostaAlunos.json();

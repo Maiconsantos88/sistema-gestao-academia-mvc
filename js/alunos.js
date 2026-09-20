@@ -26,7 +26,7 @@ const btnNaoExcluir = document.getElementById("btnNaoExcluir");
 let idParaExcluir = null;
 
 async function carregarPlanos() {
-    const resposta = await fetch("http://localhost:3000/api/planos");
+    const resposta = await fetch("/api/planos");
     const planos = await resposta.json();
 
     plano.innerHTML = '<option value="">Selecione um plano</option>';
@@ -110,7 +110,7 @@ form.addEventListener("submit", (evento) => {
     };
 
     if (alunoId.value) {
-        fetch(`http://localhost:3000/api/alunos/${alunoId.value}`, {
+        fetch(`https://sistema-gestao-academia-mvc.onrender.com/api/alunos/${alunoId.value}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'
@@ -129,7 +129,7 @@ form.addEventListener("submit", (evento) => {
             });
     } else {
 
-        fetch('http://localhost:3000/api/alunos', {
+        fetch('https://sistema-gestao-academia-mvc.onrender.com/api/alunos', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -164,7 +164,7 @@ tabela.addEventListener("click", async (evento) => {
         const id = Number(evento.target.dataset.id);
 
         try {
-            const resposta = await fetch("http://localhost:3000/api/alunos");
+            const resposta = await fetch("https://sistema-gestao-academia-mvc.onrender.com/api/alunos");
             const alunos = await resposta.json();
 
             const aluno = alunos.find(
@@ -220,7 +220,7 @@ tabela.addEventListener("click", async (evento) => {
 
     try {
         const resposta = await fetch(
-            `http://localhost:3000/api/alunos/${id}`,
+            `https://sistema-gestao-academia-mvc.onrender.com/api/alunos/${id}`,
             {
                 method: "DELETE"
             }
@@ -267,7 +267,7 @@ btnSimExcluir.addEventListener("click", () => {
 carregarPlanos();
 renderizarTabela();
 
-fetch('http://localhost:3000/api/alunos')
+fetch('https://sistema-gestao-academia-mvc.onrender.com/api/alunos')
     .then(response => response.json())
     .then(dados => {
         console.log(dados);
@@ -311,7 +311,7 @@ async function abrirAlunoDaBusca() {
         await carregarPlanos();
 
         const resposta = await fetch(
-            "http://localhost:3000/api/alunos"
+            "https://sistema-gestao-academia-mvc.onrender.com/api/alunos"
         );
 
         const alunos = await resposta.json();

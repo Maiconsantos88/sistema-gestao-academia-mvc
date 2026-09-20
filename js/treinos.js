@@ -14,7 +14,7 @@ let treinoEditando = null;
 
 async function carregarAlunos() {
     try {
-        const resposta = await fetch("http://localhost:3000/api/alunos");
+        const resposta = await fetch("https://sistema-gestao-academia-mvc.onrender.com/api/alunos");
         const alunos = await resposta.json();
 
         alunoTreino.innerHTML =
@@ -32,7 +32,7 @@ async function carregarAlunos() {
 }
 
 async function carregarTreinos() {
-    const resposta = await fetch("http://localhost:3000/api/treinos");
+    const resposta = await fetch("https://sistema-gestao-academia-mvc.onrender.com/api/treinos");
     const treinos = await resposta.json();
 
     tabela.innerHTML = "";
@@ -68,8 +68,8 @@ form.addEventListener("submit", async (evento) => {
     };
 
     const url = treinoEditando
-        ? `http://localhost:3000/api/treinos/${treinoEditando}`
-        : "http://localhost:3000/api/treinos";
+        ? `https://sistema-gestao-academia-mvc.onrender.com/api/treinos/${treinoEditando}`
+        : "https://sistema-gestao-academia-mvc.onrender.com/api/treinos";
 
     const metodo = treinoEditando ? "PUT" : "POST";
 
@@ -97,7 +97,7 @@ tabela.addEventListener("click", async (evento) => {
     const id = evento.target.dataset.id;
 
     if (evento.target.classList.contains("edit")) {
-        const resposta = await fetch("http://localhost:3000/api/treinos");
+        const resposta = await fetch("https://sistema-gestao-academia-mvc.onrender.com/api/treinos");
         const treinos = await resposta.json();
 
         const treino = treinos.find(
@@ -125,7 +125,7 @@ tabela.addEventListener("click", async (evento) => {
 
     if (evento.target.classList.contains("delete")) {
         if (confirm("Deseja excluir este treino?")) {
-            await fetch(`http://localhost:3000/api/treinos/${id}`, {
+            await fetch(`https://sistema-gestao-academia-mvc.onrender.com/api/treinos/${id}`, {
                 method: "DELETE"
             });
 
@@ -144,7 +144,7 @@ async function abrirTreinoDaBusca() {
     try {
         await carregarAlunos();
 
-        const resposta = await fetch("http://localhost:3000/api/treinos");
+        const resposta = await fetch("https://sistema-gestao-academia-mvc.onrender.com/api/treinos");
 
         if (!resposta.ok) {
             throw new Error("Erro ao buscar treinos.");

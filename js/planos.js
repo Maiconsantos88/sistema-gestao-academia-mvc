@@ -17,7 +17,7 @@ function limpar() {
 }
 
 async function carregarPlanos() {
-    const resposta = await fetch("http://localhost:3000/api/planos");
+    const resposta = await fetch("https://sistema-gestao-academia-mvc.onrender.com/api/planos");
     const planos = await resposta.json();
 
     tabela.innerHTML = "";
@@ -49,7 +49,7 @@ form.addEventListener("submit", async (evento) => {
     };
 
     if (planoId.value) {
-        await fetch(`http://localhost:3000/api/planos/${planoId.value}`, {
+        await fetch(`https://sistema-gestao-academia-mvc.onrender.com/api/planos/${planoId.value}`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
@@ -57,7 +57,7 @@ form.addEventListener("submit", async (evento) => {
 
         mostrarToast("Plano atualizado com sucesso!");
     } else {
-        await fetch("http://localhost:3000/api/planos", {
+        await fetch("https://sistema-gestao-academia-mvc.onrender.com/api/planos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
@@ -87,7 +87,7 @@ tabela.addEventListener("click", async (evento) => {
 
     if (evento.target.classList.contains("delete")) {
         if (confirm("Deseja excluir este plano?")) {
-            await fetch(`http://localhost:3000/api/planos/${id}`, {
+            await fetch(`https://sistema-gestao-academia-mvc.onrender.com/api/planos/${id}`, {
                 method: "DELETE"
             });
 
@@ -107,7 +107,7 @@ async function abrirPlanoDaBusca() {
 
     try {
         const resposta = await fetch(
-            "http://localhost:3000/api/planos"
+            "https://sistema-gestao-academia-mvc.onrender.com/api/planos"
         );
 
         if (!resposta.ok) {
