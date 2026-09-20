@@ -145,7 +145,7 @@ busca.addEventListener("input", () => {
 });
 
 tabela.addEventListener("click", async (evento) => {
-    if (evento.target.classList.contains("edit")) {
+   if (evento.target.classList.contains("btn-edit")) {
         const id = Number(evento.target.dataset.id);
 
         try {
@@ -194,7 +194,7 @@ tabela.addEventListener("click", async (evento) => {
         }
     }
 
-    if (evento.target.classList.contains("delete")) {
+    if (evento.target.classList.contains("btn-delete")) {
     const id = Number(evento.target.dataset.id);
 
     const confirmar = confirm("Deseja realmente excluir este aluno?");
