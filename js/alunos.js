@@ -61,30 +61,15 @@ function renderizarTabela(dados = model.listar()) {
             <td>${aluno.telefone}</td>
             <td>${aluno.plano}</td>
             <td>${aluno.status}</td>
-            <td>
-             <button class="btn-edit" data-id="${aluno.id}">
-                    Editar
-                </button>
-
-                <button class="btn-delete" data-id="${aluno.id}">
-                    Excluir
-                </button>
+            <td class="acoes">
+    <button class="action-btn edit" data-id="${aluno.id}">✏️</button>
+    <button class="action-btn delete" data-id="${aluno.id}">🗑️</button>
+</td>
         `;
 
         tabela.appendChild(linha);
     });
 
-    document.querySelectorAll(".btn-edit").forEach(botao => {
-        botao.addEventListener("click", () => {
-            alert("Editar aluno ID: " + botao.dataset.id);
-        });
-    });
-
-    document.querySelectorAll(".btn-delete").forEach(botao => {
-        botao.addEventListener("click", () => {
-            alert("Excluir aluno ID: " + botao.dataset.id);
-        });
-    });
 }
 
 telefone.addEventListener("input", () => {
@@ -160,7 +145,7 @@ busca.addEventListener("input", () => {
 });
 
 tabela.addEventListener("click", async (evento) => {
-    if (evento.target.classList.contains("btn-edit")) {
+    if (evento.target.classList.contains("edit")) {
         const id = Number(evento.target.dataset.id);
 
         try {
@@ -209,7 +194,7 @@ tabela.addEventListener("click", async (evento) => {
         }
     }
 
-    if (evento.target.classList.contains("btn-delete")) {
+    if (evento.target.classList.contains("delete")) {
     const id = Number(evento.target.dataset.id);
 
     const confirmar = confirm("Deseja realmente excluir este aluno?");
