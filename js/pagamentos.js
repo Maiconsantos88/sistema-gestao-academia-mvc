@@ -36,7 +36,7 @@ async function carregarPagamentos() {
         linha.innerHTML = `
             <td>${pagamento.aluno}</td>
             <td>${formatarMoeda(pagamento.valor)}</td>
-            <td>${new Date(pagamento.data_pagamento).toLocaleDateString("pt-BR")}</td>
+            <td>${pagamento.data_pagamento.split("-").reverse().join("/")}</td>
             <td>${pagamento.status}</td>
             <td class="acoes">
     <button class="action-btn edit" data-id="${pagamento.id}">
